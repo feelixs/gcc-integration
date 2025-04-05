@@ -134,8 +134,14 @@ public class SysUtil {
             }
             reader.close();
             exitCode = process.waitFor();
+
+            String endstr = "\n";
+            if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
+                endstr = " To add more source files, view https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files\n";
+            }
+
             if (exitCode == 0) {
-                ret.append("Compilation succeeded.\n");
+                ret.append("Compilation succeeded.").append(endstr);
             } else {
                 ret.append("Compilation failed with exit code: ").append(exitCode).append("\n");
             }
@@ -158,7 +164,11 @@ public class SysUtil {
             // convert the full command list to a string for printing
             String fullCmdString = String.join(" ", fullCmd);
 
-            consoleWrite("Running with parameters: " + params + "\n% " + fullCmdString + "\n", project);
+            String endstr = "\n% ";
+            if (params.isEmpty()) {
+                endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters\n% ";
+            }
+            consoleWrite("Running with parameters: " + params + endstr + fullCmdString + "\n", project);
             ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);
