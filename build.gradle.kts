@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.mikefmh.gcc-integration"
-version = "1.2.1-231"
+version = "1.2.2-241"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,8 @@ repositories {
 
 intellij {
     type.set("PY")
-    version.set("2023.1")
+    version.set("2024.1")
+    updateSinceUntilBuild.set(true)
 }
 
 tasks {
