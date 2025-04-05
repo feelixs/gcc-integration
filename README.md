@@ -88,11 +88,11 @@ This supports adding files, integers, or anything else as parameters. For file p
 
 Adding comments above the code that begin with `+file.c` will tell the plugin to compile the current file along with the ones specified.
 
-You can use the syntax:
+You can use either of the follow syntax:
 
     // +file.cpp
     // +file2.cpp
 
-or list multiple files in one line like:
+---
 
     // +file.cpp, file2.cpp
