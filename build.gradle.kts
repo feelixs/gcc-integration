@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.mikefmh.gcc-integration"
-version = "1.2.5-251"
+version = "1.2.5"
 
 repositories {
     mavenCentral()
