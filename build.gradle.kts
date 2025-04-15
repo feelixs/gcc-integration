@@ -24,6 +24,13 @@ intellijPlatform {
         type.set("IC")
     }
     
+    // Plugin dependencies
+    pluginDependencies {
+        plugins {
+            plugin("java")
+        }
+    }
+    
     // Build configuration
     buildConfiguration {
         updateSinceUntilBuild.set(true)
