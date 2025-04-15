@@ -7,8 +7,7 @@ plugins {
 group = "com.mikefmh.gcc-integration"
 
 // WHEN UPLOADING A NEW VERSION:
-// Edit plugin.xml if you need to update compatible versions of pycharm/etc
-// THEN edit this file as well to update compatibility
+// edit this file to update compatibility -> it will update xml in build
 version = "1.2.5"
 
 repositories {
@@ -31,7 +30,11 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
-
+    patchPluginXml {
+        version.set(project.version.toString())
+        sinceBuild.set("231")
+        untilBuild.set("243.*")
+    }
 
     signPlugin {
         certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
