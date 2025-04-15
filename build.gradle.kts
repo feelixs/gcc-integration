@@ -25,7 +25,6 @@ dependencies {
 
 intellijPlatform {
     pluginConfiguration {
-        name.set("Run New C Executable")
         version.set(project.version.toString())
         ideaVersion {
             sinceBuild = "231"
