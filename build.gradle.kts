@@ -1,7 +1,6 @@
 plugins {
-    id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
-    id("org.jetbrains.intellij") version "1.13.3"
+  id("org.jetbrains.intellij.platform") version "2.5.0"
+  id("org.jetbrains.intellij.platform.migration") version "2.5.0"
 }
 
 group = "com.mikefmh.gcc-integration"
@@ -11,13 +10,24 @@ group = "com.mikefmh.gcc-integration"
 version = "1.2.5"
 
 repositories {
-    mavenCentral()
+  mavenCentral()
+  intellijPlatform {
+    defaultRepositories()
+  }
 }
 
-intellij {
-    type.set("IC")
-    version.set("2024.3.5")
-    updateSinceUntilBuild.set(true)
+dependencies {
+  intellijPlatform {
+    create(type, version)
+  }
+}
+
+intellijPlatform {
+    pluginConfigurations {
+        intellij {
+            version.set("2024.3")
+        }
+    }
 }
 
 tasks {
