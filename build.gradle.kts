@@ -1,6 +1,7 @@
 plugins {
   id("org.jetbrains.intellij.platform") version "2.5.0"
   id("org.jetbrains.intellij.platform.migration") version "2.5.0"
+  id("java")
 }
 
 group = "com.mikefmh.gcc-integration"
@@ -18,15 +19,28 @@ repositories {
 
 dependencies {
   intellijPlatform {
-    create(type, version)
+    create("IC", "2024.3")
   }
 }
 
 intellijPlatform {
-    pluginConfigurations {
-        intellij {
-            version.set("2024.3")
+    pluginConfiguration {
+        name.set("GCC Integration")
+        version.set(project.version.toString())
+        ideaVersion {
+            sinceBuild = "231"
+            untilBuild = "243.*"
         }
+    }
+    
+    signing {
+        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+        privateKey.set(System.getenv("PRIVATE_KEY"))
+        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    }
+    
+    publishing {
+        token.set(System.getenv("PUBLISH_TOKEN"))
     }
 }
 
@@ -35,24 +49,5 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "17"
         targetCompatibility = "17"
-    }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    patchPluginXml {
-        version.set(project.version.toString())
-        sinceBuild.set("231")
-        untilBuild.set("243.*")
-    }
-
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
-
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
     }
 }
