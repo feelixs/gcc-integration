@@ -26,12 +26,6 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- IDE Product Compatibility -->
-    <depends optional="true">com.intellij.modules.clion</depends>
-    <depends optional="true">com.intellij.modules.python</depends>
-    <depends optional="true">com.intellij.modules.lang</depends>
-    <depends optional="true">com.intellij.modules.ultimate</depends>
-
     <!-- Define compatibility range for IDE versions -->
     <idea-version since-build="231" until-build="251.*" />
 
