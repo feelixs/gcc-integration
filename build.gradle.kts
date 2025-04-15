@@ -25,7 +25,7 @@ dependencies {
 
 intellijPlatform {
     pluginConfiguration {
-        name.set("GCC Integration")
+        name.set("Run New C Executable")
         version.set(project.version.toString())
         ideaVersion {
             sinceBuild = "231"
