@@ -30,6 +30,8 @@ intellijPlatform {
     type.set("IC") // IntelliJ IDEA Community Edition
     version.set("2024.3.5")
     updateSinceUntilBuild.set(true)
+    downloadSources.set(!System.getenv().containsKey("CI")) // Download sources in local dev
+    instrumentCode.set(true) // Enable instrumentation code for testing
 }
 
 tasks {
