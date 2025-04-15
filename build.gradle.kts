@@ -1,7 +1,5 @@
 plugins {
   id("org.jetbrains.intellij.platform") version "2.5.0"
-  id("org.jetbrains.intellij.platform.migration") version "2.5.0"
-  id("java")
 }
 
 group = "com.mikefmh.gcc-integration"
