@@ -13,6 +13,10 @@ version = "1.2.5"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 intellijPlatform {
