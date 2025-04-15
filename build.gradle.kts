@@ -1,21 +1,20 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.22"
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    id("org.jetbrains.kotlin.jvm") version "1.7.20"
+    id("org.jetbrains.intellij") version "1.13.3"
 }
 
 group = "com.mikefmh.gcc-integration"
 
 // WHEN UPLOADING A NEW VERSION:
 // edit this file to update compatibility -> it will update xml in build
-// make sure 'plugins {' is set to the updated versions
 version = "1.2.5"
 
 repositories {
     mavenCentral()
 }
 
-intellijPlatform {
+intellij {
     type.set("IC")
     version.set("2024.3.5")
     updateSinceUntilBuild.set(true)
