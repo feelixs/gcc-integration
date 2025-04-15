@@ -4,32 +4,21 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
-intellijPlatform {
-    plugins.set(listOf(
-        "java" // Bundled Java support
-    ))
-}
-
 group = "com.mikefmh.gcc-integration"
-
-// WHEN UPLOADING A NEW VERSION:
-// edit this file to update compatibility -> it will update xml in build
-// make sure 'plugins {' is set to the updated versions
 version = "1.2.5"
 
 repositories {
     mavenCentral()
-
-    intellijPlatform {
-        defaultRepositories()
-    }
 }
 
-intellijPlatform {
-    type.set("IC") // IntelliJ IDEA Community Edition
+intellij {
+    pluginName.set("gcc-integration")
     version.set("2024.3.5")
+    type.set("IC")
+    plugins.set(listOf("java"))
     updateSinceUntilBuild.set(true)
+    downloadSources.set(!System.getenv().containsKey("CI"))
+    instrumentCode.set(true)
 }
 
 tasks {
@@ -44,8 +33,8 @@ tasks {
 
     patchPluginXml {
         version.set(project.version.toString())
-        sinceBuild.set("231")
-        untilBuild.set("243.*")
+        sinceBuild.set("233")
+        untilBuild.set("245.*")
     }
 
     signPlugin {
