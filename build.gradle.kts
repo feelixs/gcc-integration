@@ -5,6 +5,10 @@ plugins {
 }
 
 group = "com.mikefmh.gcc-integration"
+
+// WHEN UPLOADING A NEW VERSION:
+// Edit plugin.xml if you need to update compatible versions of pycharm/etc
+// THEN edit this file as well to update compatibility
 version = "1.2.5"
 
 repositories {
@@ -12,7 +16,7 @@ repositories {
 }
 
 intellij {
-    type.set("PY")
+    type.set("IC")
     version.set("2024.1")
     updateSinceUntilBuild.set(true)
 }
