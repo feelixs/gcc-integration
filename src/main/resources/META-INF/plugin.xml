@@ -27,7 +27,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <!-- Define compatibility range for IDE versions -->
-    <idea-version since-build="231" until-build="251.*" />
+    <idea-version since-build="231" until-build="243.*" />
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
