@@ -1,14 +1,7 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.23"
+    id("org.jetbrains.kotlin.jvm") version "1.9.22"
     id("org.jetbrains.intellij.platform") version "2.5.0"
-}
-
-// Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
-intellijPlatform {
-    plugins.set(listOf(
-        "java" // Bundled Java support
-    ))
 }
 
 group = "com.mikefmh.gcc-integration"
@@ -27,11 +20,9 @@ repositories {
 }
 
 intellijPlatform {
-    type.set("IC") // IntelliJ IDEA Community Edition
+    type.set("IC")
     version.set("2024.3.5")
     updateSinceUntilBuild.set(true)
-    downloadSources.set(!System.getenv().containsKey("CI")) // Download sources in local dev
-    instrumentCode.set(true) // Enable instrumentation code for testing
 }
 
 tasks {
