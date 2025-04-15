@@ -17,7 +17,7 @@ repositories {
 
 intellij {
     type.set("IC")
-    version.set("*.*")
+    version.set("2024.3.5")
     updateSinceUntilBuild.set(true)
 }
 
