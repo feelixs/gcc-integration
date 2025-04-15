@@ -11,30 +11,14 @@ repositories {
     mavenCentral()
 }
 
-// Configure the IntelliJ Platform Plugin
-intellijPlatform {
-    pluginConfiguration {
-        name.set("gcc-integration")
-        version.set(project.version)
-    }
-    
-    // IntelliJ IDEA dependency
-    intellijIdeaDependency {
-        version.set("2024.3.5")
-        type.set("IC")
-    }
-    
-    // Plugin dependencies
-    pluginDependencies {
-        plugins {
-            plugin("java")
-        }
-    }
-    
-    // Build configuration
-    buildConfiguration {
-        updateSinceUntilBuild.set(true)
-    }
+intellij {
+    pluginName.set("gcc-integration")
+    version.set("2024.3.5")
+    type.set("IC")
+    plugins.set(listOf("java"))
+    updateSinceUntilBuild.set(true)
+    downloadSources.set(!System.getenv().containsKey("CI"))
+    instrumentCode.set(true)
 }
 
 tasks {
