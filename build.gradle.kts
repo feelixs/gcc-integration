@@ -6,7 +6,7 @@ group = "com.mikefmh.gcc-integration"
 
 // WHEN UPLOADING A NEW VERSION:
 // edit this file to update compatibility -> it will update xml in build
-version = "1.2.5"
+version = "1.2.6"
 
 repositories {
   mavenCentral()
@@ -26,7 +26,6 @@ intellijPlatform {
         version.set(project.version.toString())
         ideaVersion {
             sinceBuild = "231"
-            untilBuild = "243.*"
         }
     }
     
