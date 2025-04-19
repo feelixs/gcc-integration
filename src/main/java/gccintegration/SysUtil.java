@@ -226,7 +226,7 @@ public class SysUtil {
             if (exitCode == 0) {
                 ret.append("Compilation succeeded.").append(endstr);
             } else {
-                ret.append("INFO: " + infoStr + "Compilation failed with exit code: ").append(exitCode).append("\n");
+                ret.append("Compilation failed with exit code: ").append(exitCode).append("\n");
             }
         } catch (IOException | InterruptedException ex) {
             ret.append("Error executing ").append(cpp ? "g++" : "gcc").append(" command: ").append(ex.getMessage()).append("\n");
