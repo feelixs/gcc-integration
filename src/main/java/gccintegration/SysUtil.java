@@ -201,7 +201,7 @@ public class SysUtil {
 
         // convert the full command list to a string for printing
         String fullCmdString = String.join(" ", sourceFiles);
-        consoleWriteSystem("% " + fullCmdString + "\n", project);
+        consoleWriteInput("% " + fullCmdString + "\n", project);
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(sourceFiles);
