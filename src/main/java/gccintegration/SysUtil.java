@@ -297,21 +297,88 @@ public class SysUtil {
             
             Process process = processBuilder.start();
 
-            // Improved handling for Windows-specific buffering issues
+            // Enhanced handling for Windows-specific buffering issues
             if (com.intellij.openapi.util.SystemInfo.isWindows) {
-                // Windows-specific approach with immediate flushing
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                    String line;
-                    StringBuilder output = new StringBuilder();
-                    while ((line = reader.readLine()) != null) {
-                        output.append("\t").append(line).append("\n");
-                        // Immediate flush to console on each line
-                        consoleWrite(output.toString(), project);
-                        output.setLength(0); // Clear the buffer after writing
+                // Windows-specific approach with non-blocking reading and small buffer
+                Thread outputThread = new Thread(() -> {
+                    try {
+                        // Use a character-by-character approach for Windows to capture output
+                        // even before potential crashes
+                        InputStreamReader isr = new InputStreamReader(process.getInputStream());
+                        int bufferSize = 1024;
+                        char[] buffer = new char[bufferSize];
+                        StringBuilder lineBuilder = new StringBuilder();
+                        
+                        while (true) {
+                            // Check if process is still alive before blocking on read
+                            try {
+                                process.exitValue();
+                                // If we get here, process has terminated
+                                // Try to read any remaining output (non-blocking)
+                                if (isr.ready()) {
+                                    int read = isr.read(buffer, 0, bufferSize);
+                                    if (read > 0) {
+                                        String chunk = new String(buffer, 0, read);
+                                        consoleWrite("\t" + chunk, project);
+                                    }
+                                }
+                                break;
+                            } catch (IllegalThreadStateException e) {
+                                // Process is still running
+                            }
+                            
+                            // Read available data without blocking
+                            if (isr.ready()) {
+                                int read = isr.read(buffer, 0, bufferSize);
+                                if (read > 0) {
+                                    String chunk = new String(buffer, 0, read);
+                                    // Split by newlines to handle line-by-line output
+                                    int lastNewline = 0;
+                                    for (int i = 0; i < chunk.length(); i++) {
+                                        if (chunk.charAt(i) == '\n') {
+                                            lineBuilder.append(chunk.substring(lastNewline, i));
+                                            consoleWrite("\t" + lineBuilder.toString() + "\n", project);
+                                            lineBuilder.setLength(0);
+                                            lastNewline = i + 1;
+                                        }
+                                    }
+                                    
+                                    // Add any remaining text to the line builder
+                                    if (lastNewline < chunk.length()) {
+                                        lineBuilder.append(chunk.substring(lastNewline));
+                                    }
+                                }
+                            } else {
+                                // If nothing to read, sleep briefly to avoid busy-waiting
+                                try {
+                                    Thread.sleep(10);
+                                } catch (InterruptedException ex) {
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Output any remaining text in the buffer
+                        if (lineBuilder.length() > 0) {
+                            consoleWrite("\t" + lineBuilder.toString() + "\n", project);
+                        }
+                        
+                        isr.close();
+                    } catch (IOException e) {
+                        consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
                     }
-                }
+                });
+                outputThread.setDaemon(true);
+                outputThread.start();
                 
                 int exitCode = process.waitFor();
+                try {
+                    // Give the output thread a moment to finish reading
+                    outputThread.join(500);
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+                
                 if (exitCode == 0) {
                     consoleWriteInfo("Program finished with exit code: " + exitCode + "\n", project);
                 } else {
