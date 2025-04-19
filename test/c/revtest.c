@@ -186,10 +186,10 @@ void assert_string_equal(char* expected, char* actual, char* message) {
    } else {
         // Strings are not equal
         tests_incorrect++;
-        printf("\033[0;31m"); // set color to red
+        // printf("\033[0;31m"); // set color to red
         printf("[FAILED Test %d: %s]: Expected string: '%s', Actual string: '%s'\n",
                tests_run, message, expected, actual);
-        printf("\033[0m"); // reset text to default color
+        // printf("\033[0m"); // reset text to default color
     }
 }
 
