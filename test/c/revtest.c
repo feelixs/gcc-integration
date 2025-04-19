@@ -5,6 +5,7 @@ Welcome to GCC Integration!
 Use Ctrl+Shift+G to compile and run the current file.
 For help and documentation, visit: https://feelixs.github.io/gcc-integration/
 
+> when compiled + ran via this plugin (only on windows -> WRONG!):
 Compiling using GCC [Y:/GitHub/gcc-integration/test/c/revtest.c, reverse.c]
 % gcc revtest.c reverse.c -o revtest.exe
 Compilation succeeded.
@@ -13,6 +14,7 @@ Running with parameters: []. View docs on automatically adding parameters: https
 % Y:\GitHub\gcc-integration\test\c\revtest.exe
 Program finished with exit code: -1073741819
 
+> when manually run on windows (better):
 PS Y:\GitHub\gcc-integration\test\c> .\revtest.exe
 We detected no arguments. Running test suite...
 
@@ -27,6 +29,97 @@ We detected no arguments. Running test suite...
 [PASSED Test 6: one element test]
 
 
+> when run via this plugin on macos (correct!):
+Welcome to GCC Integration!
+Use ⇧⌘G to compile and run the current file.
+For help and documentation, visit: https://feelixs.github.io/gcc-integration/
+
+Compiling using GCC [/Users/michaelfelix/Documents/GitHub/gcc-integration/test/c/revtest.c, reverse.c]
+% gcc revtest.c reverse.c -o revtest
+Compilation succeeded.
+Saved compiled executable as /Users/michaelfelix/Documents/GitHub/gcc-integration/test/c/revtest
+Running with parameters: []. View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters
+% /Users/michaelfelix/Documents/GitHub/gcc-integration/test/c/revtest
+	We detected no arguments. Running test suite...
+
+	   Starting tests for reverse_arr1
+	[0;32m[PASSED Test 1: one element test]
+	[0m[0;32m[PASSED Test 2: three element test]
+	[0m[0;32m[PASSED Test 3: four element test]
+	[0m[0;32m[PASSED Test 4: five element test]
+	[0m[0;32m[PASSED Test 5: two element test]
+	[0m
+	   Starting tests for reverse_arr2
+	[0;32m[PASSED Test 6: one element test]
+	[0m[0;32m[PASSED Test 7: three element test]
+	[0m[0;32m[PASSED Test 8: four element test]
+	[0m[0;32m[PASSED Test 9: five element test]
+	[0m[0;32m[PASSED Test 10: two element test]
+	[0m
+	   Starting tests for reverse_arr3
+	[0;32m[PASSED Test 11: one element test]
+	[0m[0;32m[PASSED Test 12: three element test]
+	[0m[0;32m[PASSED Test 13: four element test]
+	[0m[0;32m[PASSED Test 14: five element test]
+	[0m[0;32m[PASSED Test 15: two element test]
+	[0m
+	   Starting tests for reverse_arr4
+	[0;32m[PASSED Test 16: one element test]
+	[0m[0;32m[PASSED Test 17: three element test]
+	[0m[0;32m[PASSED Test 18: four element test]
+	[0m[0;32m[PASSED Test 19: five element test]
+	[0m[0;32m[PASSED Test 20: two element test]
+	[0m
+	   Starting tests for reverse_arr5
+	[0;32m[PASSED Test 21: one element test]
+	[0m[0;32m[PASSED Test 22: three element test]
+	[0m[0;32m[PASSED Test 23: four element test]
+	[0m[0;32m[PASSED Test 24: five element test]
+	[0m[0;32m[PASSED Test 25: two element test]
+	[0m
+	   Starting tests for test_char_reverse1
+	[0;32m[PASSED Test 26: palindrome test]
+	[0m[0;32m[PASSED Test 27: test simple string]
+	[0m[0;32m[PASSED Test 28: special characters test]
+	[0m[0;32m[PASSED Test 29: leading space characters test]
+	[0m[0;31m[FAILED Test 30: trailing space characters test]: Expected string: '  ecaps gniliart', Actual string: '  ecapS gniliart'
+	[0m[0;31m[FAILED Test 31: Unicode Characters special test!]: Expected string: '��㓁�にちは', Actual string: 'はちにんこ'
+	[0m
+	   Starting tests for test_char_reverse2
+	[0;32m[PASSED Test 32: palindrome test]
+	[0m[0;32m[PASSED Test 33: test simple string]
+	[0m[0;32m[PASSED Test 34: special characters test]
+	[0m[0;32m[PASSED Test 35: leading space characters test]
+	[0m[0;31m[FAILED Test 36: trailing space characters test]: Expected string: '  ecaps gniliart', Actual string: '  ecapS gniliart'
+	[0m[0;31m[FAILED Test 37: Unicode Characters special test!]: Expected string: '��㓁�にちは', Actual string: 'はちにんこ'
+	[0m
+	   Starting tests for test_char_reverse3
+	[0;32m[PASSED Test 38: palindrome test]
+	[0m[0;32m[PASSED Test 39: test simple string]
+	[0m[0;32m[PASSED Test 40: special characters test]
+	[0m[0;32m[PASSED Test 41: leading space characters test]
+	[0m[0;31m[FAILED Test 42: trailing space characters test]: Expected string: '  ecaps gniliart', Actual string: '  ecapS gniliart'
+	[0m[0;31m[FAILED Test 43: Unicode Characters special test!]: Expected string: '��㓁�にちは', Actual string: 'はちにんこ'
+	[0m
+	   Starting tests for test_char_reverse4
+	[0;32m[PASSED Test 44: palindrome test]
+	[0m[0;32m[PASSED Test 45: test simple string]
+	[0m[0;32m[PASSED Test 46: special characters test]
+	[0m[0;32m[PASSED Test 47: leading space characters test]
+	[0m[0;31m[FAILED Test 48: trailing space characters test]: Expected string: '  ecaps gniliart', Actual string: '  ecapS gniliart'
+	[0m[0;31m[FAILED Test 49: Unicode Characters special test!]: Expected string: '��㓁�にちは', Actual string: 'はちにんこ'
+	[0m
+	   Starting tests for test_char_reverse5
+	[0;32m[PASSED Test 50: palindrome test]
+	[0m[0;32m[PASSED Test 51: test simple string]
+	[0m[0;32m[PASSED Test 52: special characters test]
+	[0m[0;32m[PASSED Test 53: leading space characters test]
+	[0m[0;31m[FAILED Test 54: trailing space characters test]: Expected string: '  ecaps gniliart', Actual string: '  ecapS gniliart'
+	[0m[0;31m[FAILED Test 55: Unicode Characters special test!]: Expected string: '��㓁�にちは', Actual string: 'はちにんこ'
+	[0m
+	 Your code ran 55 tests.
+	 Your reverse functions passed 45/45 tests needed to get full credit.
+Program finished with exit code: 0
 */
 
 #include <math.h>
