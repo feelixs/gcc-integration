@@ -161,8 +161,8 @@ public class SysUtil {
             String fileName = getFileName(exePath);
             // add the exe file to the beginning of the full command
             if (com.intellij.openapi.util.SystemInfo.isWindows) {
-                // ./ prefix doesn't work on windows
-                fullCmd.add(0, fileName);
+                // .\ prefix for windows
+                fullCmd.add(0, ".\" + fileName);
             } else {
                 fullCmd.add(0, "./" + fileName);
             }

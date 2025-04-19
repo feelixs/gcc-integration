@@ -23,7 +23,7 @@
   ]]></description>
     
     <change-notes><![CDATA[
-    <h2>What's New (v1.2.7)</h2>
+    <h2>What's New (v1.2.8)</h2>
     <ul>
       <li>Fixed bug causing the program compilation/output window to not appear.</li>
       <li>Changed default keystroke to `ctrl + shift + G` (kept `alt + G` for backwards compatibility).</li>
