@@ -254,7 +254,7 @@ public class SysUtil {
                 endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters";
             }
             consoleWriteInfo("Running with parameters: " + params + endstr, project);
-            consoleWriteInput("\n% " + fullCmdString + "\n", project)
+            consoleWriteInput("\n% " + fullCmdString + "\n", project);
             ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);
