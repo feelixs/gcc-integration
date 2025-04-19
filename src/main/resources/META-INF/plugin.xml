@@ -26,7 +26,8 @@
     <h2>What's New (v1.2.8)</h2>
     <ul>
       <li>Added colors to output for better readability.</li>
-      <li>Fixed bug in Windows where program output would sometimes not be captured.</li>
+      <li>Fixed bug in Windows where program output would sometimes not be captured in some situations.</li>
+      <li>Provided error messages for some common exit codes.</li>
     </ul>
   ]]></change-notes>
 
