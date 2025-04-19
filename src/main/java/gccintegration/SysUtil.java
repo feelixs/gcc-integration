@@ -93,7 +93,20 @@ public class SysUtil {
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(console.getComponent(), "", true);
         window.getContentManager().addContent(content);
-        console.print(words, ConsoleViewContentType.USER_INPUT);
+        console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
+        window.activate(null);
+    }
+
+    public static void consoleWriteInput(String words, Project project) {
+        ConsoleView console = getStoredConsole(project);
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        if (window == null) {
+            return;
+        }
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        Content content = contentFactory.createContent(console.getComponent(), "", true);
+        window.getContentManager().addContent(content);
+        console.print(words, ConsoleViewContentType.USER_OUTPUT);
         window.activate(null);
     }
     

@@ -90,7 +90,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
         } else {
             SysUtil.clearConsole(thisProject);
             String shortcutText = getShortcutText();
-            SysUtil.consoleWriteError("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
+            SysUtil.consoleWriteInfo("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
         }
 
         if (cmdRet != null) {
