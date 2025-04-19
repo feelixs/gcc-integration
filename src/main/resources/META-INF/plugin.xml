@@ -49,6 +49,7 @@
                 text="Compile Current File"
                 description="Create a new executable! Compile the active c/cpp file with GCC/G++. Upon successful compilation, the file will also be run.">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl R"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt G"/>
         </action>
     </actions>
 </idea-plugin>
