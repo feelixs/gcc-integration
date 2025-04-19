@@ -44,7 +44,7 @@ public class SysUtil {
         // because actionPerformed sets up thisProject variable
 
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("GCC/G++ Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
         if (window == null) {
             return;
         }

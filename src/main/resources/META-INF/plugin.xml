@@ -21,6 +21,14 @@
 
     If the current file is .c or .cpp, using the keyboard shortcut will create an executable for it. Upon successful compilation, the resulting executable will then be run in a tool window.
   ]]></description>
+    
+    <change-notes><![CDATA[
+    <h2>What's New</h2>
+    <ul>
+      <li>Fixed bug causing the program compilation/output window to not appear</li>
+      <li>Added error message when plugin is run on invalid file type</li>
+    </ul>
+  ]]></change-notes>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
