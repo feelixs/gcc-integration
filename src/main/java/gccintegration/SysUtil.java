@@ -164,15 +164,17 @@ public class SysUtil {
             reader.close();
             exitCode = process.waitFor();
 
+            String infoStr = "To add more source c/c++ files, add them ABOVE ALL LINES in the active file, as a comment: //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
+
             String endstr = "\n";
             if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
-                endstr = " To add more source files, view https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files\n";
+                endstr = " " + infoStr;
             }
 
             if (exitCode == 0) {
                 ret.append("Compilation succeeded.").append(endstr);
             } else {
-                ret.append("Compilation failed with exit code: ").append(exitCode).append("\n");
+                ret.append("INFO: " + infoStr + "Compilation failed with exit code: ").append(exitCode).append("\n");
             }
         } catch (IOException | InterruptedException ex) {
             ret.append("Error executing ").append(cpp ? "g++" : "gcc").append(" command: ").append(ex.getMessage()).append("\n");
