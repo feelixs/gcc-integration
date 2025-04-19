@@ -151,23 +151,21 @@ void assert_equal(char** expected, char** actual, const char* message, int len) 
       if (element_correct == len) tests_correct++;
     } else {
       element_incorrect++;
-      // Note: The condition `if (element_correct == len)` here seems incorrect,
-      // it should likely be `if (element_incorrect > 0)` or similar to track if any failure occurred.
-      // However, just removing color codes for now.
-      // printf("\033[0;31m"); // set color to red
+      if (element_correct == len) tests_incorrect++;
+      printf("\033[0;31m"); // set color to red
       printf(
           "[FAILED Test %d: %s]: At index: %d, expected string: %s, actual "
           "string: %s\n",
           tests_run, message, i, expected[i], actual[i]);
-      // printf("\033[0m"); // reset text to default color
+      printf("\033[0m"); // reset text to default color
     }
   }
 
   // If no elements are wrong, the test passed! Print a message that says this :)
   if (element_incorrect == 0){
-    // printf("\033[0;32m"); //set color to green
+    printf("\033[0;32m"); //set color to green
     printf("[PASSED Test %d: %s]\n", tests_run, message);
-    // printf("\033[0m"); //reset text to default color
+    printf("\033[0m"); //reset text to default color
   }
 }
 
@@ -177,13 +175,13 @@ void assert_equal(char** expected, char** actual, const char* message, int len) 
 void assert_string_equal(char* expected, char* actual, char* message) {
     tests_run++;
     
-   if (!strcmp(expected, actual)) {
-       // Strings are equal
-       tests_correct++;
-       // printf("\033[0;32m"); // set color to green
-       printf("[PASSED Test %d: %s]\n", tests_run, message);
-       // printf("\033[0m"); // reset text to default color
-   } else {
+    if (!strcmp(expected, actual)) {
+        // Strings are equal
+        tests_correct++;
+        printf("\033[0;32m"); // set color to green
+        printf("[PASSED Test %d: %s]\n", tests_run, message);
+        printf("\033[0m"); // reset text to default color
+    } else {
         // Strings are not equal
         tests_incorrect++;
         printf("\033[0;31m"); // set color to red
