@@ -8,7 +8,7 @@
 
 gcc-integration is a JetBrains IDE Plugin specifically designed for IDEs that do not have c/cpp support such as PyCharm. Its functionality is simple - it adds a keyboard shortcut that can run the GCC/G++ compiler on the active file (GCC must be already installed and in your system PATH).
 
-The default keyboard shortcut is `alt + G`.
+The default keyboard shortcut is `ctrl + R`.
 
 ----
 
@@ -45,7 +45,7 @@ Note that each version of PyCharm needs a specific plugin file, for example the 
 
 ## Usage
 
-If the file that's open in the editor is of type .c or .cpp, press `alt + G` to send it straight to the GCC/G++ compiler in a new IDE Tool Window. If the file successfully compiles, this plugin will also run the created executable in the same toolwindow.
+If the file that's open in the editor is of type .c or .cpp, press `ctrl + R` to send it straight to the GCC/G++ compiler in a new IDE Tool Window. If the file successfully compiles, this plugin will also run the created executable in the same toolwindow.
 
 ![preview](docs/plugin-preview.png)
 
@@ -59,7 +59,7 @@ Adding inline comments to the active C/C++ file above all code can modify the be
 
 In this example we've added `test.cpp` as an additional source file for the plugin when it compiles `main.cpp`. We've also chosen the parameters of "hello" & "world" for the `main.cpp` file. The plugin determines which file is the "active file" based on which one you've clicked onto last.
 
-As `main.cpp` is the active file while we press `alt + G` in this example, the plugin compiles it along with the specified additional source file `test.cpp`, and then runs the resulting executable with the specified params (hello, world).
+As `main.cpp` is the active file while we press `ctrl + R` in this example, the plugin compiles it along with the specified additional source file `test.cpp`, and then runs the resulting executable with the specified params (hello, world).
 
 For more information on configuring these types of settings, read on!
 

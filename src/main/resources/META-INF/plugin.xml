@@ -15,7 +15,7 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Adds the `alt + G`, `option + G` keyboard shortcut to create and run an executable of the active c/c++ file.
+    Adds the `ctrl + R` keyboard shortcut to create and run an executable of the active c/c++ file.
 
     Note that GCC must be in your system PATH for this to work. If you are using WSL, make sure to set the WSL path in the IDE settings.
 
