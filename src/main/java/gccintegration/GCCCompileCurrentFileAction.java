@@ -97,13 +97,18 @@ public class GCCCompileCurrentFileAction extends AnAction {
             Integer cmdCode = cmdRet.getLeft();
             String cmdOut = cmdRet.getRight();
 
-            SysUtil.consoleWrite(cmdOut, thisProject);
-
+            if (cmdRet.getLeft() == 0) {
+                SysUtil.consoleWrite(cmdOut, thisProject);
+            } else {
+                SysUtil.consoleWriteError(cmdOut, thisProject);
+            }
             if (cmdCode == 0) {
                 SysUtil.consoleWriteInfo("Saved compiled executable as " + outpath + "\n", thisProject);
                 List<String> params = OptionParse.getChosenExeParams(thisProject, editor);
                 SysUtil.runExecutable(outpath, params, thisProject);
             }
+        } else {
+            SysUtil.consoleWriteError("Failed to compile file(s): An unknown error occurred.", thisProject);
         }
     }
 }
