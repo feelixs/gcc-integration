@@ -155,17 +155,16 @@ public class SysUtil {
         // run an executable and print to console while it's running
         try {
             File exeFile = new File(exePath);
+
+            if (!exeFile.exists()) {
+                consoleWrite("Error: Executable file not found at path: " + exePath + "\n", project);
+                return;
+            }
+
             File workingDirectory = exeFile.getParentFile();
             List<String> fullCmd = new ArrayList<>(params);
+            fullCmd.add(0, exeFile.getAbsolutePath());
 
-            String fileName = getFileName(exePath);
-            // add the exe file to the beginning of the full command
-            if (com.intellij.openapi.util.SystemInfo.isWindows) {
-                // .\ prefix for windows
-                fullCmd.add(0, ".\" + fileName);
-            } else {
-                fullCmd.add(0, "./" + fileName);
-            }
             // convert the full command list to a string for printing
             String fullCmdString = String.join(" ", fullCmd);
 
@@ -182,11 +181,10 @@ public class SysUtil {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                // read the
                 consoleWrite("\t" + line + "\n", project);
             }
             reader.close();
-            // wait for gcc to finish running before retrieving the result
+            // wait for the program to finish before retrieving the result
             int exitCode = process.waitFor();
             consoleWrite("Program finished with exit code: " + exitCode + "\n", project);
 
