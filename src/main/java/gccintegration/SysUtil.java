@@ -209,9 +209,11 @@ public class SysUtil {
             processBuilder.redirectErrorStream(true); // we want to be able to print errors
             Process process = processBuilder.start();
             
-            // Use a dedicated thread to read from the process to prevent buffer overflow issues on Windows
             final StringBuilder outputBuilder = new StringBuilder();
-            Thread outputThread = new Thread(() -> {
+            
+            // Improved handling for Windows-specific buffering issues
+            if (com.intellij.openapi.util.SystemInfo.isWindows) {
+                // Windows-specific approach with synchronous reading
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -220,32 +222,48 @@ public class SysUtil {
                 } catch (IOException e) {
                     outputBuilder.append("Error reading compiler output: ").append(e.getMessage()).append("\n");
                 }
-            });
-            outputThread.start();
-            
-            try {
                 exitCode = process.waitFor();
-                // ensure output thread completes before continuing
-                outputThread.join();
-                ret.append(outputBuilder);
+            } else {
+                // Original implementation for non-Windows systems with thread
+                Thread outputThread = new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            outputBuilder.append(line).append("\n");
+                        }
+                    } catch (IOException e) {
+                        outputBuilder.append("Error reading compiler output: ").append(e.getMessage()).append("\n");
+                    }
+                });
+                outputThread.start();
                 
-                String infoStr = "To add more source c/c++ files, add them ABOVE ALL LINES in the active file, as a comment: //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
-
-                String endstr = "\n";
-                if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
-                    endstr = " " + infoStr;
+                try {
+                    exitCode = process.waitFor();
+                    // ensure output thread completes before continuing
+                    outputThread.join();
+                } catch (InterruptedException ex) {
+                    outputBuilder.append("Error waiting for compiler: ").append(ex.getMessage()).append("\n");
                 }
+            }
+            
+            ret.append(outputBuilder);
+            
+            String infoStr = "To add more source c/c++ files, add them ABOVE ALL LINES in the active file, as a comment: //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
 
-                if (exitCode == 0) {
-                    ret.append("Compilation succeeded.").append(endstr);
-                } else {
-                    ret.append("Compilation failed with exit code: ").append(exitCode).append("\n");
-                }
-            } catch (InterruptedException ex) {
-                ret.append("Error waiting for compiler: ").append(ex.getMessage()).append("\n");
+            String endstr = "\n";
+            if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
+                endstr = " " + infoStr;
+            }
+
+            if (exitCode == 0) {
+                ret.append("Compilation succeeded.").append(endstr);
+            } else {
+                ret.append("Compilation failed with exit code: ").append(exitCode).append("\n");
             }
         } catch (IOException ex) {
             ret.append("Error executing ").append(cpp ? "g++" : "gcc").append(" command: ").append(ex.getMessage()).append("\n");
+        } catch (InterruptedException ex) {
+            ret.append("Error waiting for compiler: ").append(ex.getMessage()).append("\n");
         }
         return Pair.of(exitCode, ret.toString());
     }
@@ -279,36 +297,60 @@ public class SysUtil {
             
             Process process = processBuilder.start();
 
-            // Create separate threads for reading stdout and stderr to prevent buffering issues on Windows
-            Thread outputThread = new Thread(() -> {
+            // Improved handling for Windows-specific buffering issues
+            if (com.intellij.openapi.util.SystemInfo.isWindows) {
+                // Windows-specific approach with immediate flushing
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
+                    StringBuilder output = new StringBuilder();
                     while ((line = reader.readLine()) != null) {
-                        final String outputLine = line;
-                        consoleWrite("\t" + outputLine + "\n", project);
+                        output.append("\t").append(line).append("\n");
+                        // Immediate flush to console on each line
+                        consoleWrite(output.toString(), project);
+                        output.setLength(0); // Clear the buffer after writing
                     }
-                } catch (IOException e) {
-                    consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
                 }
-            });
-            outputThread.start();
-            
-            try {
-                // wait for the program to finish
-                int exitCode = process.waitFor();
-                // ensure output thread completes
-                outputThread.join();
                 
+                int exitCode = process.waitFor();
                 if (exitCode == 0) {
                     consoleWriteInfo("Program finished with exit code: " + exitCode + "\n", project);
                 } else {
                     consoleWriteError("Program finished with exit code: " + exitCode + "\n", project);
                 }
-            } catch (InterruptedException ex) {
-                consoleWriteError("Error while waiting for the process to finish: " + ex.getMessage() + "\n", project);
+            } else {
+                // Original implementation for non-Windows systems
+                Thread outputThread = new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            final String outputLine = line;
+                            consoleWrite("\t" + outputLine + "\n", project);
+                        }
+                    } catch (IOException e) {
+                        consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
+                    }
+                });
+                outputThread.start();
+                
+                try {
+                    // wait for the program to finish
+                    int exitCode = process.waitFor();
+                    // ensure output thread completes
+                    outputThread.join();
+                    
+                    if (exitCode == 0) {
+                        consoleWriteInfo("Program finished with exit code: " + exitCode + "\n", project);
+                    } else {
+                        consoleWriteError("Program finished with exit code: " + exitCode + "\n", project);
+                    }
+                } catch (InterruptedException ex) {
+                    consoleWriteError("Error while waiting for the process to finish: " + ex.getMessage() + "\n", project);
+                }
             }
         } catch (IOException ex) {
             consoleWriteError("Error while running program executable: " + ex.getMessage() + "\n", project);
+        } catch (InterruptedException ex) {
+            consoleWriteError("Error while waiting for the process to finish: " + ex.getMessage() + "\n", project);
         }
     }
 }
