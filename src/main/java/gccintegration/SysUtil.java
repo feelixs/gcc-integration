@@ -297,7 +297,6 @@ public class SysUtil {
             
             Process process = processBuilder.start();
 
-            // Enhanced handling for Windows-specific buffering issues
             if (com.intellij.openapi.util.SystemInfo.isWindows) {
                 // Windows-specific approach with non-blocking reading and small buffer
                 Thread outputThread = new Thread(() -> {
