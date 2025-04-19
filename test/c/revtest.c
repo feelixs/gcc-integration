@@ -10,6 +10,21 @@ Saved compiled executable as Y:/GitHub/gcc-integration/test/c/revtest.exe
 Running with parameters: []. View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters
 % Y:\GitHub\gcc-integration\test\c\revtest.exe
 Program finished with exit code: -1073741819
+
+PS Y:\GitHub\gcc-integration\test\c> .\revtest.exe
+We detected no arguments. Running test suite...
+
+   Starting tests for reverse_arr1
+[PASSED Test 1: one element test]
+[PASSED Test 2: three element test]
+[PASSED Test 3: four element test]
+[PASSED Test 4: five element test]
+[PASSED Test 5: two element test]
+
+   Starting tests for reverse_arr2
+[PASSED Test 6: one element test]
+
+
 */
 
 //+reverse.c
