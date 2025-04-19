@@ -1,5 +1,14 @@
 package gccintegration;
 
+import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.keymap.KeymapManager;
+import com.intellij.openapi.keymap.Keymap;
+import com.intellij.openapi.keymap.KeymapUtil;
+import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
@@ -25,11 +34,31 @@ import java.util.List;
 public class SysUtil {
     private static final Key<ConsoleView> CONSOLE_VIEW_KEY = new com.intellij.openapi.util.Key<>("gccConsole.ConsoleView");
 
+    private static String getShortcutText() {
+        ActionManager actionManager = ActionManager.getInstance();
+        Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
+        Shortcut[] shortcuts = keymap.getShortcuts("GccCompileCurrentFile");
+        String shortcutText = "the shortcut";
+
+        for (Shortcut shortcut : shortcuts) {
+            if (shortcut instanceof KeyboardShortcut) {
+                KeyboardShortcut keyboardShortcut = (KeyboardShortcut) shortcut;
+                shortcutText = KeymapUtil.getShortcutText(keyboardShortcut);
+                break;
+            }
+        }
+        return shortcutText;
+    }
+
     public static ConsoleView getStoredConsole(Project project) {
         ConsoleView console = project.getUserData(CONSOLE_VIEW_KEY);
         if (console == null) {
             project.putUserData(CONSOLE_VIEW_KEY, new ConsoleViewImpl(project, true));
             console = project.getUserData(CONSOLE_VIEW_KEY);
+            String shortcutText = getShortcutText();
+            console.print("Welcome to GCC Integration!\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+            console.print("Use " + shortcutText + " to compile and run the current file.\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+            console.print("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
         }
         return console;
     }
