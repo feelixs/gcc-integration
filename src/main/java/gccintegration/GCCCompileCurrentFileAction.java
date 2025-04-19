@@ -100,7 +100,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
             if (cmdRet.getLeft() == 0) { // refers to exit code
                 SysUtil.consoleWrite(cmdOut, thisProject);
             } else {
-                String extraInfo = "\nINFO: To add more source C/C++ files, add them ABOVE ALL LINES in the active file, as a comment like //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
+                String extraInfo = "\nINFO: To add more source C/C++ files, add them ABOVE ALL LINES in the active file, as a comment like // +file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
                 SysUtil.consoleWriteError(cmdOut, thisProject);
                 SysUtil.consoleWriteSystem(extraInfo, thisProject);
             }
