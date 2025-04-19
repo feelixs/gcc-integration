@@ -90,7 +90,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
         } else {
             SysUtil.clearConsole(thisProject);
             String shortcutText = getShortcutText();
-            SysUtil.consoleWrite("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
+            SysUtil.consoleWriteError("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
         }
 
         if (cmdRet != null) {
@@ -100,7 +100,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
             SysUtil.consoleWrite(cmdOut, thisProject);
 
             if (cmdCode == 0) {
-                SysUtil.consoleWrite("Saved compiled executable as " + outpath + "\n", thisProject);
+                SysUtil.consoleWriteInfo("Saved compiled executable as " + outpath + "\n", thisProject);
                 List<String> params = OptionParse.getChosenExeParams(thisProject, editor);
                 SysUtil.runExecutable(outpath, params, thisProject);
             }

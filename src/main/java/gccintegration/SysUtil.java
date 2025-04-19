@@ -83,6 +83,45 @@ public class SysUtil {
         console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
         window.activate(null);
     }
+    
+    public static void consoleWriteInfo(String words, Project project) {
+        ConsoleView console = getStoredConsole(project);
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        if (window == null) {
+            return;
+        }
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        Content content = contentFactory.createContent(console.getComponent(), "", true);
+        window.getContentManager().addContent(content);
+        console.print(words, ConsoleViewContentType.LOG_INFO);
+        window.activate(null);
+    }
+    
+    public static void consoleWriteError(String words, Project project) {
+        ConsoleView console = getStoredConsole(project);
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        if (window == null) {
+            return;
+        }
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        Content content = contentFactory.createContent(console.getComponent(), "", true);
+        window.getContentManager().addContent(content);
+        console.print(words, ConsoleViewContentType.ERROR_OUTPUT);
+        window.activate(null);
+    }
+    
+    public static void consoleWriteSystem(String words, Project project) {
+        ConsoleView console = getStoredConsole(project);
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        if (window == null) {
+            return;
+        }
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        Content content = contentFactory.createContent(console.getComponent(), "", true);
+        window.getContentManager().addContent(content);
+        console.print(words, ConsoleViewContentType.SYSTEM_OUTPUT);
+        window.activate(null);
+    }
 
     /**
      * @param project IDE's opened project
@@ -136,7 +175,7 @@ public class SysUtil {
      * @return Pair of int, string (return code, std output)
      */
     public static Pair<Integer, String> runCompiler(List<String> sourceFiles, String outputName, Boolean cpp, Project project) {
-        consoleWrite((cpp ? "Compiling using G++ " : "Compiling using GCC ") + sourceFiles + "\n", project);
+        consoleWriteSystem((cpp ? "Compiling using G++ " : "Compiling using GCC ") + sourceFiles + "\n", project);
         Integer exitCode = 0;
         StringBuilder ret = new StringBuilder();
         String mainSrcPath = sourceFiles.get(0);
@@ -149,7 +188,7 @@ public class SysUtil {
 
         // convert the full command list to a string for printing
         String fullCmdString = String.join(" ", sourceFiles);
-        consoleWrite("% " + fullCmdString + "\n", project);
+        consoleWriteSystem("% " + fullCmdString + "\n", project);
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(sourceFiles);
@@ -186,7 +225,7 @@ public class SysUtil {
             File exeFile = new File(exePath);
 
             if (!exeFile.exists()) {
-                consoleWrite("Error: Executable file not found at path: " + exePath + "\n", project);
+                consoleWriteError("Error: Executable file not found at path: " + exePath + "\n", project);
                 return;
             }
 
@@ -201,7 +240,7 @@ public class SysUtil {
             if (params.isEmpty()) {
                 endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters\n% ";
             }
-            consoleWrite("Running with parameters: " + params + endstr + fullCmdString + "\n", project);
+            consoleWriteInfo("Running with parameters: " + params + endstr + fullCmdString + "\n", project);
             ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);
@@ -215,12 +254,16 @@ public class SysUtil {
             reader.close();
             // wait for the program to finish before retrieving the result
             int exitCode = process.waitFor();
-            consoleWrite("Program finished with exit code: " + exitCode + "\n", project);
+            if (exitCode == 0) {
+                consoleWriteInfo("Program finished with exit code: " + exitCode + "\n", project);
+            } else {
+                consoleWriteError("Program finished with exit code: " + exitCode + "\n", project);
+            }
 
         } catch (IOException ex) {
-            consoleWrite("Error while running program executable: " + ex.getMessage() + "\n", project);
+            consoleWriteError("Error while running program executable: " + ex.getMessage() + "\n", project);
         } catch (InterruptedException ex) {
-            consoleWrite("Error while waiting for the process to finish: " + ex.getMessage() + "\n", project);
+            consoleWriteError("Error while waiting for the process to finish: " + ex.getMessage() + "\n", project);
         }
     }
 }
