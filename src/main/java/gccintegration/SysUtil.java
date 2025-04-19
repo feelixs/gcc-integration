@@ -93,7 +93,7 @@ public class SysUtil {
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(console.getComponent(), "", true);
         window.getContentManager().addContent(content);
-        console.print(words, ConsoleViewContentType.LOG_INFO);
+        console.print(words, ConsoleViewContentType.USER_INPUT);
         window.activate(null);
     }
     
