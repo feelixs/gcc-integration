@@ -1,3 +1,17 @@
+/*
+Welcome to GCC Integration!
+Use Ctrl+Shift+G to compile and run the current file.
+For help and documentation, visit: https://feelixs.github.io/gcc-integration/
+
+Compiling using GCC [Y:/GitHub/gcc-integration/test/c/revtest.c, reverse.c]
+% gcc revtest.c reverse.c -o revtest.exe
+Compilation succeeded.
+Saved compiled executable as Y:/GitHub/gcc-integration/test/c/revtest.exe
+Running with parameters: []. View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters
+% Y:\GitHub\gcc-integration\test\c\revtest.exe
+Program finished with exit code: -1073741819
+*/
+
 //+reverse.c
 #include <math.h>
 #include <stdio.h>
