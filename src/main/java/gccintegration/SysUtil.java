@@ -60,7 +60,7 @@ public class SysUtil {
             consoleWriteInfo("Use " + shortcutText + " to compile and run the current file.\n", project);
             consoleWriteInfo("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n", project);
             if (SystemInfo.isWindows) {
-                consoleWriteError("NOTE: For Windows machines, program print output may not show in this plugin. We're working on finding the issue.\n\n", project);
+                consoleWriteError("NOTE: On Windows systems, console output from `printf` or `cout <<` may not display when running executables via this plugin. We're working on resolving this issue.\n\n", project);
             }
         }
         return console;
