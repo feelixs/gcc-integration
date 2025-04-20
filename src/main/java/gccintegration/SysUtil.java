@@ -234,6 +234,97 @@ public class SysUtil {
         return Pair.of(exitCode, ret.toString());
     }
 
+    /**
+     * Translates common process exit codes to human-readable descriptions
+     * @param exitCode The process exit code
+     * @return A human-readable description of the exit code, or null if not recognized
+     */
+    public static String getExitCodeDescription(int exitCode) {
+        // Windows-specific error codes
+        if (SystemInfo.isWindows) {
+            switch (exitCode) {
+                case -1073741819: // 0xC0000005
+                    return "Access Violation/Segmentation Fault";
+                case -1073741795: // 0xC000001D
+                    return "Illegal Instruction";
+                case -1073741786: // 0xC0000026
+                    return "Invalid Parameter";
+                case -1073741571: // 0xC00000FD
+                    return "Stack Overflow";
+                case -1073741515: // 0xC0000135
+                    return "DLL Not Found";
+                case -1073741676: // 0xC0000094
+                    return "Integer Division by Zero";
+                case -1073741787: // 0xC0000025
+                    return "Non-continuable Exception";
+                case -1073740791: // 0xC0000409
+                    return "Stack Buffer Overflow";
+                case -1073741783: // 0xC0000029
+                    return "Not Implemented";
+                case -1073741811: // 0xC000000D
+                    return "Invalid Parameter";
+            }
+        } else {
+            // Unix/Linux/macOS signals
+            switch (exitCode) {
+                case 139:
+                    return "Segmentation Fault (SIGSEGV)";
+                case 136:
+                    return "Floating Point Exception (SIGFPE)";
+                case 134:
+                    return "Abort/Assertion Failure (SIGABRT)";
+                case 132:
+                    return "Illegal Instruction (SIGILL)";
+                case 143:
+                    return "Terminated (SIGTERM)";
+                case 138:
+                    return "Bus Error (SIGBUS)";
+                case 137:
+                    return "Killed (SIGKILL)";
+                case 135:
+                    return "Trace/Breakpoint Trap (SIGTRAP)";
+                case 131:
+                    return "Quit (SIGQUIT)";
+                case 142:
+                    return "Socket Exception (SIGPIPE)";
+                case 159:
+                    return "Bad System Call (SIGSYS)";
+            }
+        }
+
+        // Common exit codes for all platforms
+        switch (exitCode) {
+            case 1:
+                return "General Error";
+            case 2:
+                return "Misuse of Shell Builtins";
+            case 3:
+                return "GCC: Missing Source Files";
+            case 4:
+                return "GCC: Internal Compiler Error";
+            case 126:
+                return "Command Cannot Execute";
+            case 127:
+                return "Command Not Found";
+            case 128:
+                return "Invalid Exit Argument";
+            case 130:
+                return "Script Terminated by Control-C";
+            case 139:
+                return "Segmentation Fault";
+            case 152:
+                return "GCC: Assembler Error";
+            case 153:
+                return "GCC: Linker Error";
+            case 254:
+                return "GCC: Compilation Error";
+            case 255:
+                return "Exit Status Out of Range";
+            default:
+                return null;
+        }
+    }
+
     public static void runExecutable(String exePath, List<String> params, Project project) {
         // run an executable and print to console while it's running
         try {
