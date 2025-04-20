@@ -373,27 +373,57 @@ public class SysUtil {
             }
 
             File workingDirectory = exeFile.getParentFile();
-            List<String> fullCmd = new ArrayList<>(params);
-            fullCmd.add(0, exeFile.getAbsolutePath());
-
-            // convert the full command list to a string for printing
-            String fullCmdString = String.join(" ", fullCmd);
-
-            String endstr = "";
-            if (params.isEmpty()) {
-                endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters";
+            List<String> command = new ArrayList<>();
+            
+            if (SystemInfo.isWindows) {
+                // Windows-specific command setup
+                command.add("cmd.exe");
+                command.add("/C");
+                command.add("\"" + exeFile.getAbsolutePath() + "\"");
+                if (!params.isEmpty()) {
+                    command.addAll(params);
+                }
+            } else {
+                // Unix/Mac setup
+                command.add(exeFile.getAbsolutePath());
+                command.addAll(params);
             }
+
+            String fullCmdString = String.join(" ", command);
+            String endstr = params.isEmpty() ? 
+                ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters" : 
+                "";
+
             consoleWriteInfo("Running with parameters: " + params + endstr, project);
             consoleWriteInput("\n% " + fullCmdString + "\n", project);
-            ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
+            
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);
             
+            // Set UTF-8 environment for Windows
+            if (SystemInfo.isWindows) {
+                processBuilder.environment().put("PYTHONIOENCODING", "utf-8");
+                processBuilder.environment().put("PYTHONUTF8", "1");
+                processBuilder.environment().put("CHCP", "65001");
+            }
+            
             Process process = processBuilder.start();
 
-            if (com.intellij.openapi.util.SystemInfo.isWindows) {
-                // Windows-specific approach with non-blocking reading and small buffer
+            if (SystemInfo.isWindows) {
+                // Improved Windows output handling with explicit flushing
                 Thread outputThread = new Thread(() -> {
+                    try {
+                        BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            final String outputLine = line;
+                            consoleWrite("\t" + outputLine + "\n", project);
+                        }
+                    } catch (IOException e) {
+                        consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
+                    }
                     try {
                         // Use a character-by-character approach for Windows to capture output
                         // even before potential crashes
