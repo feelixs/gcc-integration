@@ -59,6 +59,9 @@ public class SysUtil {
             console.print("Welcome to GCC Integration!\n", ConsoleViewContentType.SYSTEM_OUTPUT);
             console.print("Use " + shortcutText + " to compile and run the current file.\n", ConsoleViewContentType.SYSTEM_OUTPUT);
             console.print("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+            if (SystemInfo.isWindows) {
+                console.print("NOTE: For Windows machines, program print output may not show in this plugin. We're working on finding the issue.", ConsoleViewContentType.SYSTEM_OUTPUT);
+            }
         }
         return console;
     }
