@@ -422,9 +422,6 @@ public class SysUtil {
                     } catch (IOException e) {
                         consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
                     }
-                    } catch (IOException e) {
-                        consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
-                    }
                 });
                 outputThread.setDaemon(true);
                 outputThread.start();
