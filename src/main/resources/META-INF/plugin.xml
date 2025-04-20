@@ -32,6 +32,7 @@
     <h3>v1.2.7.5</h3>
     <ul>
       <li>Fixed "cannot find file specified" when running exe on Windows.</li>
+      <li>Provided error names for known exit codes.</li>
       <li>Added error message when plugin is run on invalid file type.</li>
     </ul>
   ]]></change-notes>
