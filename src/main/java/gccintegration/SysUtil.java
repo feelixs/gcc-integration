@@ -365,7 +365,8 @@ public class SysUtil {
             if (exitCode == 0) {
                 consoleWriteInfo("Program finished with exit code: " + exitCode + "\n", project);
             } else {
-                consoleWriteError("Program finished with exit code: " + exitCode + "\n", project);
+                String errName = getExitCodeDescription(exitCode);
+                consoleWriteError("Program finished with exit code: " + exitCode + " (" + errName + ")\n", project);
             }
 
         } catch (IOException ex) {
