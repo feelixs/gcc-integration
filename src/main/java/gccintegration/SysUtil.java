@@ -56,11 +56,11 @@ public class SysUtil {
             project.putUserData(CONSOLE_VIEW_KEY, new ConsoleViewImpl(project, true));
             console = project.getUserData(CONSOLE_VIEW_KEY);
             String shortcutText = getShortcutText();
-            console.print("Welcome to GCC Integration!\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-            console.print("Use " + shortcutText + " to compile and run the current file.\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-            console.print("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+            consoleWriteInfo("Welcome to GCC Integration!\n", project);
+            consoleWriteInfo("Use " + shortcutText + " to compile and run the current file.\n", project);
+            consoleWriteInfo("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n", project);
             if (SystemInfo.isWindows) {
-                console.print("NOTE: For Windows machines, program print output may not show in this plugin. We're working on finding the issue.", ConsoleViewContentType.SYSTEM_OUTPUT);
+                consoleWriteError("NOTE: For Windows machines, program print output may not show in this plugin. We're working on finding the issue.\n\n", project);
             }
         }
         return console;
