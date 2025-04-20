@@ -376,19 +376,8 @@ public class SysUtil {
             File workingDirectory = exeFile.getParentFile();
             List<String> command = new ArrayList<>();
             
-            if (SystemInfo.isWindows) {
-                // Windows-specific command setup
-                command.add("cmd.exe");
-                command.add("/C");
-                command.add("\"" + exeFile.getAbsolutePath() + "\"");
-                if (!params.isEmpty()) {
-                    command.addAll(params);
-                }
-            } else {
-                // Unix/Mac setup
-                command.add(exeFile.getAbsolutePath());
-                command.addAll(params);
-            }
+            command.add(exeFile.getAbsolutePath());
+            command.addAll(params);
 
             String fullCmdString = String.join(" ", command);
             String endstr = params.isEmpty() ? 
@@ -412,82 +401,27 @@ public class SysUtil {
             Process process = processBuilder.start();
 
             if (SystemInfo.isWindows) {
-                // Improved Windows output handling with explicit flushing
+                // Windows-specific output handling with immediate character-by-character reading
                 Thread outputThread = new Thread(() -> {
                     try {
-                        BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            final String outputLine = line;
-                            consoleWrite("\t" + outputLine + "\n", project);
+                        InputStream inputStream = process.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                        StringBuilder buffer = new StringBuilder();
+                        int c;
+                        while ((c = isr.read()) != -1) {
+                            buffer.append((char)c);
+                            if (c == '\n' || buffer.length() > 1024) {
+                                consoleWrite("\t" + buffer.toString(), project);
+                                buffer.setLength(0);
+                            }
+                        }
+                        // Flush any remaining content
+                        if (buffer.length() > 0) {
+                            consoleWrite("\t" + buffer.toString(), project);
                         }
                     } catch (IOException e) {
                         consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
                     }
-                    try {
-                        // Use a character-by-character approach for Windows to capture output
-                        // even before potential crashes
-                        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-                        int bufferSize = 1024;
-                        char[] buffer = new char[bufferSize];
-                        StringBuilder lineBuilder = new StringBuilder();
-                        
-                        while (true) {
-                            // Check if process is still alive before blocking on read
-                            try {
-                                process.exitValue();
-                                // If we get here, process has terminated
-                                // Try to read any remaining output (non-blocking)
-                                if (isr.ready()) {
-                                    int read = isr.read(buffer, 0, bufferSize);
-                                    if (read > 0) {
-                                        String chunk = new String(buffer, 0, read);
-                                        consoleWrite("\t" + chunk, project);
-                                    }
-                                }
-                                break;
-                            } catch (IllegalThreadStateException e) {
-                                // Process is still running
-                            }
-                            
-                            // Read available data without blocking
-                            if (isr.ready()) {
-                                int read = isr.read(buffer, 0, bufferSize);
-                                if (read > 0) {
-                                    String chunk = new String(buffer, 0, read);
-                                    // Split by newlines to handle line-by-line output
-                                    int lastNewline = 0;
-                                    for (int i = 0; i < chunk.length(); i++) {
-                                        if (chunk.charAt(i) == '\n') {
-                                            lineBuilder.append(chunk.substring(lastNewline, i));
-                                            consoleWrite("\t" + lineBuilder.toString() + "\n", project);
-                                            lineBuilder.setLength(0);
-                                            lastNewline = i + 1;
-                                        }
-                                    }
-                                    
-                                    // Add any remaining text to the line builder
-                                    if (lastNewline < chunk.length()) {
-                                        lineBuilder.append(chunk.substring(lastNewline));
-                                    }
-                                }
-                            } else {
-                                // If nothing to read, sleep briefly to avoid busy-waiting
-                                try {
-                                    Thread.sleep(10);
-                                } catch (InterruptedException ex) {
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // Output any remaining text in the buffer
-                        if (lineBuilder.length() > 0) {
-                            consoleWrite("\t" + lineBuilder.toString() + "\n", project);
-                        }
-                        
-                        isr.close();
                     } catch (IOException e) {
                         consoleWriteError("Error reading program output: " + e.getMessage() + "\n", project);
                     }
