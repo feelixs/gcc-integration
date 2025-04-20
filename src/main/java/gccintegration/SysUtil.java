@@ -1,6 +1,8 @@
 package gccintegration;
 
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.keymap.Keymap;
@@ -25,7 +27,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import com.intellij.openapi.util.Key;
 import java.util.ArrayList;
