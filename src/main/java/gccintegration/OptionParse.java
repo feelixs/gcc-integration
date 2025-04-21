@@ -25,34 +25,38 @@ public class OptionParse {
     // is the lines only composed of spaces?
     public static List<String> getBeginComments(Project project, Editor editor) {
         // return commented lines above all code of the active file
-        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-        Document document = editor.getDocument();
-        PsiFile psiFile = psiDocumentManager.getPsiFile(document);
-
         List<String> comments = new ArrayList<>();
+        try {
+            PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+            Document document = editor.getDocument();
+            PsiFile psiFile = psiDocumentManager.getPsiFile(document);
 
-        if (psiFile != null) {
-            for (PsiElement element : psiFile.getChildren()) {
-                if (element instanceof PsiPlainText) {
-                    String[] lines = element.getText().split("\\r?\\n");
-                    // split file into a list of its lines
-                    // \r is optional as sometimes windows will put \r\n to signify newlines
-                    for (String line : lines) {
-                        if (COMMENT_PATTERN.matcher(line).find()) {
-                            // is the line a comment?
-                            comments.add(line.trim().split("//")[1]); // remove the "//" from the comment
-                        } else if (WHITESPACE_PATTERN.matcher(line).find()) {
-                            // line is not a comment, but it's an empty line
-                            // empty lines --> keep reading comments
-                            continue;
-                        }
-                        else {
-                            // non-comment line --> comments are over
-                            break;
+            if (psiFile == null) {
+                SysUtil.consoleWriteError("Error: Could not parse user comment options: Unable to read the active file.\n", project);
+            } else {
+                for (PsiElement element : psiFile.getChildren()) {
+                    if (element instanceof PsiPlainText) {
+                        String[] lines = element.getText().split("\\r?\\n");
+                        // split file into a list of its lines
+                        // \r is optional as sometimes windows will put \r\n to signify newlines
+                        for (String line : lines) {
+                            if (COMMENT_PATTERN.matcher(line).find()) {
+                                // is the line a comment?
+                                comments.add(line.trim().split("//")[1]); // remove the "//" from the comment
+                            } else if (WHITESPACE_PATTERN.matcher(line).find()) {
+                                // line is not a comment, but it's an empty line
+                                // empty lines --> keep reading comments
+                                continue;
+                            } else {
+                                // non-comment line --> comments are over
+                                break;
+                            }
                         }
                     }
                 }
             }
+        } catch (Error err) {
+            SysUtil.consoleWriteError("Error: Could not parse user comment options: " + err + "\n", project);
         }
         return comments;
     }
@@ -88,18 +92,23 @@ public class OptionParse {
     public static List<String> getChosenSourceFiles(Project project, Editor editor, String mainSrcPath) {
         List<String> returnList = new ArrayList<>();
         List<String> allComments = getBeginComments(project, editor);
-        for (String comment : allComments) {
-            if (SOURCEFILE_PATTERN.matcher(comment).find()) {
-                comment = comment.replace(" ", "").replace("+", "");
-                returnList.addAll(Arrays.asList(comment.split("\\s*,\\s*")));
-                // we need to remove the main source file from the "returnList" so we don't input it twice into gcc
-                // if the user has included the main source file in their comment
-                String[] mainSrcFilenames = mainSrcPath.split("/");
-                String mainSrcFilename = mainSrcFilenames[mainSrcFilenames.length - 1];;
-                returnList.remove(mainSrcFilename); // if it doesn't contain mainSrcFilename, .remove() does nothing
+        try {
+            for (String comment : allComments) {
+                if (SOURCEFILE_PATTERN.matcher(comment).find()) {
+                    comment = comment.replace(" ", "").replace("+", "");
+                    returnList.addAll(Arrays.asList(comment.split("\\s*,\\s*")));
+                    // we need to remove the main source file from the "returnList" so we don't input it twice into gcc
+                    // if the user has included the main source file in their comment
+                    String[] mainSrcFilenames = mainSrcPath.split("/");
+                    String mainSrcFilename = mainSrcFilenames[mainSrcFilenames.length - 1];
+                    ;
+                    returnList.remove(mainSrcFilename); // if it doesn't contain mainSrcFilename, .remove() does nothing
+                }
             }
+            returnList.add(0, mainSrcPath);
+        } catch (Error err) {
+            SysUtil.consoleWriteError("Error: Could not parse user comment options: " + err + "\n", project);
         }
-        returnList.add(0, mainSrcPath);
         return returnList;
     }
 }

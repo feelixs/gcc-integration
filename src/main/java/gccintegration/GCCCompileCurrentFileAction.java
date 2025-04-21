@@ -83,12 +83,11 @@ public class GCCCompileCurrentFileAction extends AnAction {
 
         // determine if we need to use GCC or G++ (.c or .cpp)
         Pair<Integer, String> cmdRet = null;
+        SysUtil.clearConsole(thisProject);
         if ((curFileType.equals(".c")) | (curFileType.equals(".cpp"))) {
             List<String> sourceFiles = OptionParse.getChosenSourceFiles(thisProject, editor, filePath);
-            SysUtil.clearConsole(thisProject);
             cmdRet = SysUtil.runCompiler(sourceFiles, outname, curFileType.equals(".cpp"), thisProject);
         } else {
-            SysUtil.clearConsole(thisProject);
             String shortcutText = getShortcutText();
             SysUtil.consoleWriteInfo("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
         }
