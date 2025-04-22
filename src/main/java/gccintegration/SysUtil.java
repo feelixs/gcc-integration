@@ -71,19 +71,22 @@ public class SysUtil {
         console.clear();
     }
 
-    // Helper method to get or ensure console content
+    // Helper method to access the console content - no longer creates content
     private static void ensureConsoleContent(Project project) {
-        ConsoleView console = getStoredConsole(project);
         ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
         if (window == null) {
             return;
         }
         
-        // Check if we already have a content
-        if (window.getContentManager().getContentCount() == 0) {
-            ContentFactory contentFactory = ContentFactory.getInstance();
-            Content content = contentFactory.createContent(console.getComponent(), "Run", false);
-            window.getContentManager().addContent(content);
+        // Only activate the window, content creation is now solely handled by ConsoleWindowFactory
+        if (window.getContentManager().getContentCount() > 0) {
+            // Find and select the "Run" tab created by ConsoleWindowFactory
+            for (Content content : window.getContentManager().getContents()) {
+                if ("Run".equals(content.getDisplayName())) {
+                    window.getContentManager().setSelectedContent(content);
+                    return;
+                }
+            }
         }
     }
     
