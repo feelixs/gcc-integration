@@ -23,8 +23,7 @@ public class ConsoleWindowFactory implements ToolWindowFactory {
         actionGroup.add(ActionManager.getInstance().getAction("GccCompileCurrentFile"));
         
         // Create toolbar
-        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(
-                "GccConsoleToolbar", actionGroup, false);
+        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("GccConsoleToolbar", actionGroup, false);
         
         // Create panel with toolbar and console
         JPanel panel = new JPanel(new BorderLayout());

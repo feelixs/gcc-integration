@@ -82,7 +82,7 @@ public class SysUtil {
         // Check if we already have a content
         if (window.getContentManager().getContentCount() == 0) {
             ContentFactory contentFactory = ContentFactory.getInstance();
-            Content content = contentFactory.createContent(console.getComponent(), "GCC Output", false);
+            Content content = contentFactory.createContent(console.getComponent(), "Run", false);
             window.getContentManager().addContent(content);
         }
     }
