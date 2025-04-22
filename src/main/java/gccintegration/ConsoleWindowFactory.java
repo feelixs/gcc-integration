@@ -30,9 +30,7 @@ public class ConsoleWindowFactory implements ToolWindowFactory {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(toolbar.getComponent(), BorderLayout.WEST);
         panel.add(gccConsole.getComponent(), BorderLayout.CENTER);
-        
-        // create the console's content
         ContentFactory contentFactory = ContentFactory.getInstance();
-        toolWindow.getContentManager().addContent(contentFactory.createContent(panel, "", false));
+        toolWindow.getContentManager().addContent(contentFactory.createContent(panel, "Run", false));
     }
 }

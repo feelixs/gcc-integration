@@ -71,18 +71,32 @@ public class SysUtil {
         console.clear();
     }
 
-    public static void consoleWrite(String words, Project project) {
-        // must be called after 'actionPerformed' is run
-        // because actionPerformed sets up thisProject variable
-
+    // Helper method to get or ensure console content
+    private static void ensureConsoleContent(Project project) {
         ConsoleView console = getStoredConsole(project);
         ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        // Check if we already have a content
+        if (window.getContentManager().getContentCount() == 0) {
+            ContentFactory contentFactory = ContentFactory.getInstance();
+            Content content = contentFactory.createContent(console.getComponent(), "GCC Output", false);
+            window.getContentManager().addContent(content);
+        }
+    }
+    
+    public static void consoleWrite(String words, Project project) {
+        // must be called after 'actionPerformed' is run
+        // because actionPerformed sets up thisProject variable
+        ConsoleView console = getStoredConsole(project);
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        if (window == null) {
+            return;
+        }
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
         window.activate(null);
     }
@@ -93,9 +107,8 @@ public class SysUtil {
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
         window.activate(null);
     }
@@ -106,9 +119,8 @@ public class SysUtil {
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.USER_INPUT);
         window.activate(null);
     }
@@ -119,9 +131,8 @@ public class SysUtil {
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.ERROR_OUTPUT);
         window.activate(null);
     }
@@ -132,9 +143,8 @@ public class SysUtil {
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.SYSTEM_OUTPUT);
         window.activate(null);
     }
@@ -219,15 +229,8 @@ public class SysUtil {
             reader.close();
             exitCode = process.waitFor();
 
-            String infoStr = "To add more source c/c++ files, add them ABOVE ALL LINES in the active file, as a comment: //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
-
-            String endstr = "\n";
-            if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
-                endstr = " " + infoStr;
-            }
-
             if (exitCode == 0) {
-                ret.append("Compilation succeeded.").append(endstr);
+                ret.append("Compilation succeeded.\n");
             } else {
                 String errorName = getExitCodeDescription(exitCode);
                 ret.append("Compilation failed with exit code: ").append(exitCode).append(" (").append(errorName).append(")\n");
