@@ -42,7 +42,10 @@ public class OptionParse {
                         for (String line : lines) {
                             if (COMMENT_PATTERN.matcher(line).find()) {
                                 // is the line a comment?
-                                comments.add(line.trim().split("//")[1]); // remove the "//" from the comment
+                                String[] parts = line.trim().split("//", 2);
+                                if (parts.length > 1) {
+                                    comments.add(parts[1]); // remove the "//" from the comment
+                                }
                             } else if (WHITESPACE_PATTERN.matcher(line).find()) {
                                 // line is not a comment, but it's an empty line
                                 // empty lines --> keep reading comments
