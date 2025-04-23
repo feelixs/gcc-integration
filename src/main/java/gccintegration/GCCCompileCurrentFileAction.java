@@ -94,23 +94,21 @@ public class GCCCompileCurrentFileAction extends AnAction {
         }
 
         if (cmdRet != null) {
-            if (cmdRet.getRight().toLowerCase().contains("cannot run program\"g++\"") | cmdRet.getRight().toLowerCase().contains("cannot run program\"gcc\"") ) {
-                SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
-                return;
-            }
-
             Integer cmdCode = cmdRet.getLeft();
             String cmdOut = cmdRet.getRight();
 
-            if (cmdRet.getLeft() == 0) { // refers to exit code
-                SysUtil.consoleWrite(cmdOut, thisProject);
-            } else {
-                SysUtil.consoleWriteError(cmdOut, thisProject);
+            if (cmdOut.toLowerCase().contains("cannot run program\"g++\"") | cmdOut.toLowerCase().contains("cannot run program\"gcc\"") ) {
+                SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
+                return;
             }
+            SysUtil.consoleWriteInfo("Compilation complete with exit code " + cmdCode.toString() + "\n", thisProject);
             if (cmdCode == 0) {
+                SysUtil.consoleWrite(cmdOut, thisProject);
                 SysUtil.consoleWriteInfo("Saved compiled executable as " + outpath + "\n", thisProject);
                 List<String> params = OptionParse.getChosenExeParams(thisProject, editor);
                 SysUtil.runExecutable(outpath, params, thisProject);
+            } else {
+                SysUtil.consoleWriteError(cmdOut, thisProject);
             }
         } else {
             SysUtil.consoleWriteError("Failed to compile file(s): An unknown error occurred.", thisProject);
