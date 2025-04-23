@@ -26,8 +26,7 @@
     <h2>What's New</h2>
     <h3>v1.2.8</h3>
     <ul>
-      <li>Added options menu with right-click on the "Compile and Run" button</li>
-      <li>Added UI for configuring parameters and additional source files</li>
+      <li>Added options menu for adding more source files or runtime parameters.</li>
     </ul>
     <h3>v1.2.7.5</h3>
     <ul>
