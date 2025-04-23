@@ -98,6 +98,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
             String cmdOut = cmdRet.getRight();
 
             if (cmdOut.contains(" command: Cannot run program ")) {
+                // "Error executing (gcc/g++) command: Cannot run program "(gcc/g++)" -> windows
                 SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
                 return;
             }
