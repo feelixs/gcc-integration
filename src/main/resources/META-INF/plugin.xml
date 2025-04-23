@@ -52,7 +52,7 @@
     <actions>
         <action id="GccCompileCurrentFile"
                 class="gccintegration.GCCCompileCurrentFileAction"
-                text="Compile &amp; Run"
+                text="Compile and Run"
                 icon="AllIcons.Actions.Execute"
                 description="Compile and run the active C file.">
             <keyboard-shortcut keymap="$default" first-keystroke="alt G"/>
