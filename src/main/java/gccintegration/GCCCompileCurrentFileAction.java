@@ -100,6 +100,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
             if (cmdOut.contains(" command: Cannot run program ")) {
                 // "Error executing (gcc/g++) command: Cannot run program "(gcc/g++)" -> windows
                 SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
+                SysUtil.consoleWriteInfo("\nPlease install gcc. Refer here for info: https://feelixs.github.io/gcc-integration/index.html#dependencies", thisProject);
                 return;
             }
             SysUtil.consoleWriteInfo("Compilation complete with exit code " + cmdCode.toString() + "\n", thisProject);
