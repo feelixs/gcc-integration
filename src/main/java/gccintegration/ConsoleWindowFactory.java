@@ -29,7 +29,9 @@ public class ConsoleWindowFactory implements ToolWindowFactory {
         // Create actions for toolbar
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         AnAction compileAction = ActionManager.getInstance().getAction("GccCompileCurrentFile");
+        AnAction openConsoleAction = ActionManager.getInstance().getAction("OpenGccConsoleWindow");
         actionGroup.add(compileAction);
+        actionGroup.add(openConsoleAction);
         
         // Create toolbar
         ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("GccConsoleToolbar", actionGroup, false);
@@ -62,7 +64,7 @@ public class ConsoleWindowFactory implements ToolWindowFactory {
         panel.add(toolbar.getComponent(), BorderLayout.WEST);
         panel.add(gccConsole.getComponent(), BorderLayout.CENTER);
         ContentFactory contentFactory = ContentFactory.getInstance();
-        toolWindow.getContentManager().addContent(contentFactory.createContent(panel, "Run", false));
+        toolWindow.getContentManager().addContent(contentFactory.createContent(panel, "Output", false));
     }
     
     private void showOptionsPopup(MouseEvent e, Project project) {

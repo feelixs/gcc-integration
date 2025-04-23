@@ -62,5 +62,11 @@
                 description="Compile and run the active C file.">
             <keyboard-shortcut keymap="$default" first-keystroke="alt G"/>
         </action>
+        <action id="OpenGccConsoleWindow"
+                class="gccintegration.OpenConsoleWindowAction"
+                text="Compilation/Run Options"
+                icon="AllIcons.Actions.PresentationAssistantSettings"
+                description="Specify additional source files to compile along with the active one, or provide parameters to use when running it.">
+        </action>
     </actions>
 </idea-plugin>

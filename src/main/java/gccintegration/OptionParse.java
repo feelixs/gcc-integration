@@ -208,34 +208,38 @@ public class OptionParse {
         
         // Check if there's already a parameters comment
         List<String> comments = getBeginComments(project, editor);
-        boolean hasParamLine = false;
+        final boolean[] hasParamLine = {false};
         for (String comment : comments) {
             if (PARAM_PATTERN.matcher(comment).find()) {
-                hasParamLine = true;
+                hasParamLine[0] = true;
                 break;
             }
         }
         
-        // Apply changes in a write action
+        // Apply changes in a write command action
         psiDocumentManager.commitDocument(document);
-        if (hasParamLine) {
-            // Replace existing parameter line
-            String text = document.getText();
-            String[] lines = text.split("\\r?\\n");
-            for (int i = 0; i < lines.length; i++) {
-                if (lines[i].trim().startsWith("//") && PARAM_PATTERN.matcher(lines[i]).find()) {
-                    int lineStart = document.getLineStartOffset(i);
-                    int lineEnd = document.getLineEndOffset(i);
-                    document.replaceString(lineStart, lineEnd, paramsLine.toString());
-                    break;
-                }
-            }
-        } else {
-            // Add new parameter line at the beginning
-            document.insertString(0, paramsLine.toString() + "\n");
-        }
         
-        psiDocumentManager.commitDocument(document);
+        // Use WriteCommandAction for document modifications
+        com.intellij.openapi.command.WriteCommandAction.runWriteCommandAction(project, "Update Parameters", null, () -> {
+            if (hasParamLine[0]) {
+                // Replace existing parameter line
+                String text = document.getText();
+                String[] lines = text.split("\\r?\\n");
+                for (int i = 0; i < lines.length; i++) {
+                    if (lines[i].trim().startsWith("//") && PARAM_PATTERN.matcher(lines[i]).find()) {
+                        int lineStart = document.getLineStartOffset(i);
+                        int lineEnd = document.getLineEndOffset(i);
+                        document.replaceString(lineStart, lineEnd, paramsLine.toString());
+                        break;
+                    }
+                }
+            } else {
+                // Add new parameter line at the beginning
+                document.insertString(0, paramsLine.toString() + "\n");
+            }
+            
+            psiDocumentManager.commitDocument(document);
+        });
     }
     
     /**
@@ -266,34 +270,38 @@ public class OptionParse {
         
         // Check if there's already a source files comment
         List<String> comments = getBeginComments(project, editor);
-        boolean hasSourcesLine = false;
+        final boolean[] hasSourcesLine = {false};
         for (String comment : comments) {
             if (SOURCEFILE_PATTERN.matcher(comment).find()) {
-                hasSourcesLine = true;
+                hasSourcesLine[0] = true;
                 break;
             }
         }
         
-        // Apply changes in a write action
+        // Apply changes in a write command action
         psiDocumentManager.commitDocument(document);
-        if (hasSourcesLine) {
-            // Replace existing source files line
-            String text = document.getText();
-            String[] lines = text.split("\\r?\\n");
-            for (int i = 0; i < lines.length; i++) {
-                if (lines[i].trim().startsWith("//") && SOURCEFILE_PATTERN.matcher(lines[i]).find()) {
-                    int lineStart = document.getLineStartOffset(i);
-                    int lineEnd = document.getLineEndOffset(i);
-                    document.replaceString(lineStart, lineEnd, sourcesLine.toString());
-                    break;
-                }
-            }
-        } else {
-            // Add new source files line at the beginning
-            document.insertString(0, sourcesLine.toString() + "\n");
-        }
         
-        psiDocumentManager.commitDocument(document);
+        // Use WriteCommandAction for document modifications
+        com.intellij.openapi.command.WriteCommandAction.runWriteCommandAction(project, "Update Source Files", null, () -> {
+            if (hasSourcesLine[0]) {
+                // Replace existing source files line
+                String text = document.getText();
+                String[] lines = text.split("\\r?\\n");
+                for (int i = 0; i < lines.length; i++) {
+                    if (lines[i].trim().startsWith("//") && SOURCEFILE_PATTERN.matcher(lines[i]).find()) {
+                        int lineStart = document.getLineStartOffset(i);
+                        int lineEnd = document.getLineEndOffset(i);
+                        document.replaceString(lineStart, lineEnd, sourcesLine.toString());
+                        break;
+                    }
+                }
+            } else {
+                // Add new source files line at the beginning
+                document.insertString(0, sourcesLine.toString() + "\n");
+            }
+            
+            psiDocumentManager.commitDocument(document);
+        });
     }
     
     /**
@@ -402,16 +410,27 @@ public class OptionParse {
             JBScrollPane scrollPane = new JBScrollPane(filesTable);
             panel.add(scrollPane, BorderLayout.CENTER);
             
-            // Add buttons for adding/removing files
+            // Add buttons for browsing/removing files
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JButton addButton = new JButton("Add");
             JButton browseButton = new JButton("Browse...");
             JButton removeButton = new JButton("Remove");
             
-            addButton.addActionListener(e -> tableModel.addRow(new Object[]{""}));
-            
             browseButton.addActionListener(e -> {
-                JFileChooser fileChooser = new JFileChooser();
+                // Get the current file's directory to use as initial directory
+                String currentFilePath = null;
+                try {
+                    currentFilePath = SysUtil.getCurrentFilepath(project);
+                } catch (Exception ex) {
+                    // Ignore exceptions if current file path can't be determined
+                }
+                
+                File initialDir = null;
+                if (currentFilePath != null) {
+                    File currentFile = new File(currentFilePath);
+                    initialDir = currentFile.getParentFile();
+                }
+                
+                JFileChooser fileChooser = new JFileChooser(initialDir);
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fileChooser.setMultiSelectionEnabled(true);
                 fileChooser.setFileFilter(new FileNameExtensionFilter("C/C++ Source Files", "c", "cpp", "h", "hpp"));
@@ -432,7 +451,6 @@ public class OptionParse {
                 }
             });
             
-            buttonPanel.add(addButton);
             buttonPanel.add(browseButton);
             buttonPanel.add(removeButton);
             panel.add(buttonPanel, BorderLayout.SOUTH);

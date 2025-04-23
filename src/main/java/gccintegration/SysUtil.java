@@ -81,7 +81,7 @@ public class SysUtil {
         if (window.getContentManager().getContentCount() > 0) {
             // Find and select the "Run" tab created by ConsoleWindowFactory
             for (Content content : window.getContentManager().getContents()) {
-                if ("Run".equals(content.getDisplayName())) {
+                if ("Output".equals(content.getDisplayName())) {
                     window.getContentManager().setSelectedContent(content);
                     return;
                 }
@@ -102,19 +102,11 @@ public class SysUtil {
         console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
         window.activate(null);
     }
-    
-    public static void consoleWriteInfo(String words, Project project) {
-        ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
-        if (window == null) {
-            return;
-        }
-        
-        ensureConsoleContent(project);
-        console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
-        window.activate(null);
-    }
 
+    public static void consoleWriteInfo(String words, Project project) {
+        consoleWrite(words, project);
+    }
+    
     public static void consoleWriteInput(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
         ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
@@ -138,7 +130,7 @@ public class SysUtil {
         console.print(words, ConsoleViewContentType.ERROR_OUTPUT);
         window.activate(null);
     }
-    
+
     public static void consoleWriteSystem(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
         ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
