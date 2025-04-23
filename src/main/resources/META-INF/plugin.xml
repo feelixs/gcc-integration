@@ -47,14 +47,14 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Executable Build Output" anchor="bottom" factoryClass="gccintegration.ConsoleWindowFactory" icon="AllIcons.Actions.Execute"/>
+        <toolWindow id="Run New Executable (C/C++)" anchor="bottom" factoryClass="gccintegration.ConsoleWindowFactory" icon="AllIcons.Actions.Execute"/>
     </extensions>
     <actions>
         <action id="GccCompileCurrentFile"
                 class="gccintegration.GCCCompileCurrentFileAction"
-                text="Compile Current File"
+                text="Compile &amp; Run"
                 icon="AllIcons.Actions.Execute"
-                description="Use G++ to compile and run the active C file.">
+                description="Compile and run the active C file.">
             <keyboard-shortcut keymap="$default" first-keystroke="alt G"/>
         </action>
     </actions>

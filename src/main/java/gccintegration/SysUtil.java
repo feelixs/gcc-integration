@@ -56,8 +56,7 @@ public class SysUtil {
             project.putUserData(CONSOLE_VIEW_KEY, new ConsoleViewImpl(project, true));
             console = project.getUserData(CONSOLE_VIEW_KEY);
             String shortcutText = getShortcutText();
-            consoleWriteInfo("Welcome to GCC Integration!\n", project);
-            consoleWriteInfo("Use " + shortcutText + " to compile and run the current file.\n", project);
+            consoleWriteInfo("Press 'Compile & Run' (Hotkey " + shortcutText + ") to compile and run the current file.\n", project);
             consoleWriteInfo("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n", project);
             if (SystemInfo.isWindows) {
                 consoleWriteError("NOTE: On Windows systems, console output from `printf` or `cout <<` may not display when running executables via this plugin. We're working on resolving this issue.\n\n", project);
