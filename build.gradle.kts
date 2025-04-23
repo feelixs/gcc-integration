@@ -6,7 +6,7 @@ group = "com.mikefmh.gcc-integration"
 
 // WHEN UPLOADING A NEW VERSION:
 // edit this file to update compatibility -> it will update xml in build
-version = "1.2.7.7"
+version = "1.2.8"
 
 repositories {
   mavenCentral()

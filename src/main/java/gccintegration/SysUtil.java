@@ -72,7 +72,7 @@ public class SysUtil {
 
     // Helper method to access the console content - no longer creates content
     private static void ensureConsoleContent(Project project) {
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
@@ -93,7 +93,7 @@ public class SysUtil {
         // must be called after 'actionPerformed' is run
         // because actionPerformed sets up thisProject variable
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
@@ -105,7 +105,7 @@ public class SysUtil {
     
     public static void consoleWriteInfo(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
@@ -117,7 +117,7 @@ public class SysUtil {
 
     public static void consoleWriteInput(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
@@ -129,7 +129,7 @@ public class SysUtil {
     
     public static void consoleWriteError(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
@@ -141,7 +141,7 @@ public class SysUtil {
     
     public static void consoleWriteSystem(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }

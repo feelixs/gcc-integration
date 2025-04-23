@@ -2,15 +2,27 @@ package gccintegration;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiPlainText;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.table.JBTable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class OptionParse {
     private static final Pattern COMMENT_PATTERN = Pattern.compile("^//.*");
@@ -113,5 +125,332 @@ public class OptionParse {
             SysUtil.consoleWriteError("Error: Could not parse user comment options: " + err + "\n", project);
         }
         return returnList;
+    }
+    
+    /**
+     * Show dialog to configure parameters for the executable
+     */
+    public static void configureParameters(Project project) {
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if (editor == null) {
+            SysUtil.consoleWriteError("Error: No active editor found.\n", project);
+            return;
+        }
+        
+        // Get current parameters
+        List<String> currentParams = getChosenExeParams(project, editor);
+        
+        // Show dialog to edit parameters
+        ParameterDialog dialog = new ParameterDialog(project, currentParams);
+        if (dialog.showAndGet()) {
+            // User confirmed - apply changes
+            List<String> newParams = dialog.getParameters();
+            applyParametersToFile(project, editor, newParams);
+        }
+    }
+    
+    /**
+     * Show dialog to configure additional source files
+     */
+    public static void configureSourceFiles(Project project) {
+        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        if (editor == null) {
+            SysUtil.consoleWriteError("Error: No active editor found.\n", project);
+            return;
+        }
+        
+        try {
+            String filePath = SysUtil.getCurrentFilepath(project);
+            List<String> currentFiles = getChosenSourceFiles(project, editor, filePath);
+            // Remove the main source file which is always at index 0
+            if (!currentFiles.isEmpty()) {
+                currentFiles.remove(0);
+            }
+            
+            // Show dialog to edit source files
+            SourceFilesDialog dialog = new SourceFilesDialog(project, currentFiles);
+            if (dialog.showAndGet()) {
+                // User confirmed - apply changes
+                List<String> newFiles = dialog.getSourceFiles();
+                applySourceFilesToFile(project, editor, newFiles);
+            }
+        } catch (NullPointerException ex) {
+            SysUtil.consoleWriteError("Error: Could not get current file path.\n", project);
+        }
+    }
+    
+    /**
+     * Apply parameters to the source file as a comment
+     */
+    private static void applyParametersToFile(Project project, Editor editor, List<String> params) {
+        if (params.isEmpty()) {
+            return;
+        }
+        
+        Document document = editor.getDocument();
+        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+        PsiFile psiFile = psiDocumentManager.getPsiFile(document);
+        
+        if (psiFile == null) {
+            SysUtil.consoleWriteError("Error: Unable to modify the active file.\n", project);
+            return;
+        }
+        
+        // Format parameters as a comment line
+        StringBuilder paramsLine = new StringBuilder("// [");
+        for (int i = 0; i < params.size(); i++) {
+            paramsLine.append(params.get(i));
+            if (i < params.size() - 1) {
+                paramsLine.append(", ");
+            }
+        }
+        paramsLine.append("]");
+        
+        // Check if there's already a parameters comment
+        List<String> comments = getBeginComments(project, editor);
+        boolean hasParamLine = false;
+        for (String comment : comments) {
+            if (PARAM_PATTERN.matcher(comment).find()) {
+                hasParamLine = true;
+                break;
+            }
+        }
+        
+        // Apply changes in a write action
+        psiDocumentManager.commitDocument(document);
+        if (hasParamLine) {
+            // Replace existing parameter line
+            String text = document.getText();
+            String[] lines = text.split("\\r?\\n");
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i].trim().startsWith("//") && PARAM_PATTERN.matcher(lines[i]).find()) {
+                    int lineStart = document.getLineStartOffset(i);
+                    int lineEnd = document.getLineEndOffset(i);
+                    document.replaceString(lineStart, lineEnd, paramsLine.toString());
+                    break;
+                }
+            }
+        } else {
+            // Add new parameter line at the beginning
+            document.insertString(0, paramsLine.toString() + "\n");
+        }
+        
+        psiDocumentManager.commitDocument(document);
+    }
+    
+    /**
+     * Apply source files to the source file as a comment
+     */
+    private static void applySourceFilesToFile(Project project, Editor editor, List<String> sourceFiles) {
+        if (sourceFiles.isEmpty()) {
+            return;
+        }
+        
+        Document document = editor.getDocument();
+        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+        PsiFile psiFile = psiDocumentManager.getPsiFile(document);
+        
+        if (psiFile == null) {
+            SysUtil.consoleWriteError("Error: Unable to modify the active file.\n", project);
+            return;
+        }
+        
+        // Format source files as a comment line
+        StringBuilder sourcesLine = new StringBuilder("// +");
+        for (int i = 0; i < sourceFiles.size(); i++) {
+            sourcesLine.append(sourceFiles.get(i));
+            if (i < sourceFiles.size() - 1) {
+                sourcesLine.append(", ");
+            }
+        }
+        
+        // Check if there's already a source files comment
+        List<String> comments = getBeginComments(project, editor);
+        boolean hasSourcesLine = false;
+        for (String comment : comments) {
+            if (SOURCEFILE_PATTERN.matcher(comment).find()) {
+                hasSourcesLine = true;
+                break;
+            }
+        }
+        
+        // Apply changes in a write action
+        psiDocumentManager.commitDocument(document);
+        if (hasSourcesLine) {
+            // Replace existing source files line
+            String text = document.getText();
+            String[] lines = text.split("\\r?\\n");
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i].trim().startsWith("//") && SOURCEFILE_PATTERN.matcher(lines[i]).find()) {
+                    int lineStart = document.getLineStartOffset(i);
+                    int lineEnd = document.getLineEndOffset(i);
+                    document.replaceString(lineStart, lineEnd, sourcesLine.toString());
+                    break;
+                }
+            }
+        } else {
+            // Add new source files line at the beginning
+            document.insertString(0, sourcesLine.toString() + "\n");
+        }
+        
+        psiDocumentManager.commitDocument(document);
+    }
+    
+    /**
+     * Dialog for editing parameters
+     */
+    private static class ParameterDialog extends DialogWrapper {
+        private final DefaultTableModel tableModel;
+        private final JBTable paramsTable;
+        
+        public ParameterDialog(Project project, List<String> currentParams) {
+            super(project);
+            setTitle("Configure Parameters");
+            
+            // Create table model
+            tableModel = new DefaultTableModel();
+            tableModel.addColumn("Parameter");
+            
+            // Add current parameters
+            for (String param : currentParams) {
+                tableModel.addRow(new Object[]{param});
+            }
+            
+            // Create table
+            paramsTable = new JBTable(tableModel);
+            
+            init();
+        }
+        
+        @Nullable
+        @Override
+        protected JComponent createCenterPanel() {
+            JPanel panel = new JPanel(new BorderLayout());
+            
+            // Add table with scroll pane
+            JBScrollPane scrollPane = new JBScrollPane(paramsTable);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            
+            // Add buttons for adding/removing parameters
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JButton addButton = new JButton("Add");
+            JButton removeButton = new JButton("Remove");
+            
+            addButton.addActionListener(e -> tableModel.addRow(new Object[]{""}));
+            removeButton.addActionListener(e -> {
+                int selectedRow = paramsTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    tableModel.removeRow(selectedRow);
+                }
+            });
+            
+            buttonPanel.add(addButton);
+            buttonPanel.add(removeButton);
+            panel.add(buttonPanel, BorderLayout.SOUTH);
+            
+            panel.setPreferredSize(new Dimension(400, 300));
+            return panel;
+        }
+        
+        @NotNull
+        public List<String> getParameters() {
+            List<String> params = new ArrayList<>();
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String param = (String) tableModel.getValueAt(i, 0);
+                if (param != null && !param.trim().isEmpty()) {
+                    params.add(param.trim());
+                }
+            }
+            return params;
+        }
+    }
+    
+    /**
+     * Dialog for editing source files
+     */
+    private static class SourceFilesDialog extends DialogWrapper {
+        private final DefaultTableModel tableModel;
+        private final JBTable filesTable;
+        private final Project project;
+        
+        public SourceFilesDialog(Project project, List<String> currentFiles) {
+            super(project);
+            this.project = project;
+            setTitle("Configure Additional Source Files");
+            
+            // Create table model
+            tableModel = new DefaultTableModel();
+            tableModel.addColumn("Source File Path");
+            
+            // Add current files
+            for (String file : currentFiles) {
+                tableModel.addRow(new Object[]{file});
+            }
+            
+            // Create table
+            filesTable = new JBTable(tableModel);
+            
+            init();
+        }
+        
+        @Nullable
+        @Override
+        protected JComponent createCenterPanel() {
+            JPanel panel = new JPanel(new BorderLayout());
+            
+            // Add table with scroll pane
+            JBScrollPane scrollPane = new JBScrollPane(filesTable);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            
+            // Add buttons for adding/removing files
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JButton addButton = new JButton("Add");
+            JButton browseButton = new JButton("Browse...");
+            JButton removeButton = new JButton("Remove");
+            
+            addButton.addActionListener(e -> tableModel.addRow(new Object[]{""}));
+            
+            browseButton.addActionListener(e -> {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setMultiSelectionEnabled(true);
+                fileChooser.setFileFilter(new FileNameExtensionFilter("C/C++ Source Files", "c", "cpp", "h", "hpp"));
+                
+                int result = fileChooser.showOpenDialog(panel);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File[] selectedFiles = fileChooser.getSelectedFiles();
+                    for (File file : selectedFiles) {
+                        tableModel.addRow(new Object[]{file.getAbsolutePath()});
+                    }
+                }
+            });
+            
+            removeButton.addActionListener(e -> {
+                int selectedRow = filesTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    tableModel.removeRow(selectedRow);
+                }
+            });
+            
+            buttonPanel.add(addButton);
+            buttonPanel.add(browseButton);
+            buttonPanel.add(removeButton);
+            panel.add(buttonPanel, BorderLayout.SOUTH);
+            
+            panel.setPreferredSize(new Dimension(500, 300));
+            return panel;
+        }
+        
+        @NotNull
+        public List<String> getSourceFiles() {
+            List<String> files = new ArrayList<>();
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String file = (String) tableModel.getValueAt(i, 0);
+                if (file != null && !file.trim().isEmpty()) {
+                    files.add(file.trim());
+                }
+            }
+            return files;
+        }
     }
 }
