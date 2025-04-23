@@ -204,7 +204,6 @@ public class SysUtil {
      * @return Pair of int, string (return code, std output)
      */
     public static Pair<Integer, String> runCompiler(List<String> sourceFiles, String outputName, Boolean cpp, Project project) {
-        consoleWriteSystem((cpp ? "Compiling using G++ " : "Compiling using GCC ") + sourceFiles + "\n", project);
         Integer exitCode = 0;
         StringBuilder ret = new StringBuilder();
         String mainSrcPath = sourceFiles.get(0);
@@ -352,12 +351,7 @@ public class SysUtil {
             // convert the full command list to a string for printing
             String fullCmdString = String.join(" ", fullCmd);
 
-            String endstr = "";
-            if (params.isEmpty()) {
-                endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters";
-            }
-            consoleWriteInfo("Running with parameters: " + params + endstr, project);
-            consoleWriteInput("\n% " + fullCmdString + "\n", project);
+            consoleWriteInput("\n\n% " + fullCmdString + "\n", project);
             ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);
