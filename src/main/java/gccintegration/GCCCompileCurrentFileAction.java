@@ -94,6 +94,11 @@ public class GCCCompileCurrentFileAction extends AnAction {
         }
 
         if (cmdRet != null) {
+            if (cmdRet.getRight().toLowerCase().contains("cannot run program\"g++\"") | cmdRet.getRight().toLowerCase().contains("cannot run program\"gcc\"") ) {
+                SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
+                return;
+            }
+
             Integer cmdCode = cmdRet.getLeft();
             String cmdOut = cmdRet.getRight();
 
