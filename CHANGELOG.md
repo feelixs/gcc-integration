@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 ### Added
-## v1.2.9 
-- added changelog
+- none
+
+## [v1.2.9]
+- add changelog.md
 - use system file explorer UI when adding additional source files
