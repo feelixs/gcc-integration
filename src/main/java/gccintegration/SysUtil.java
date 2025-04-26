@@ -56,8 +56,7 @@ public class SysUtil {
             project.putUserData(CONSOLE_VIEW_KEY, new ConsoleViewImpl(project, true));
             console = project.getUserData(CONSOLE_VIEW_KEY);
             String shortcutText = getShortcutText();
-            consoleWriteInfo("Welcome to GCC Integration!\n", project);
-            consoleWriteInfo("Use " + shortcutText + " to compile and run the current file.\n", project);
+            consoleWriteInfo("Press 'Compile and Run' (Hotkey " + shortcutText + ") to compile and run the current file.\n", project);
             consoleWriteInfo("For help and documentation, visit: https://feelixs.github.io/gcc-integration/\n", project);
             if (SystemInfo.isWindows) {
                 consoleWriteError("NOTE: On Windows systems, console output from `printf` or `cout <<` may not display when running executables via this plugin. We're working on resolving this issue.\n\n", project);
@@ -71,70 +70,75 @@ public class SysUtil {
         console.clear();
     }
 
+    // Helper method to access the console content - no longer creates content
+    private static void ensureConsoleContent(Project project) {
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
+        if (window == null) {
+            return;
+        }
+        
+        // Only activate the window, content creation is now solely handled by ConsoleWindowFactory
+        if (window.getContentManager().getContentCount() > 0) {
+            // Find and select the "Run" tab created by ConsoleWindowFactory
+            for (Content content : window.getContentManager().getContents()) {
+                if ("Output".equals(content.getDisplayName())) {
+                    window.getContentManager().setSelectedContent(content);
+                    return;
+                }
+            }
+        }
+    }
+    
     public static void consoleWrite(String words, Project project) {
         // must be called after 'actionPerformed' is run
         // because actionPerformed sets up thisProject variable
-
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
         window.activate(null);
+    }
+
+    public static void consoleWriteInfo(String words, Project project) {
+        consoleWrite(words, project);
     }
     
-    public static void consoleWriteInfo(String words, Project project) {
-        ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
-        if (window == null) {
-            return;
-        }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
-        console.print(words, ConsoleViewContentType.NORMAL_OUTPUT);
-        window.activate(null);
-    }
-
     public static void consoleWriteInput(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.USER_INPUT);
         window.activate(null);
     }
     
     public static void consoleWriteError(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.ERROR_OUTPUT);
         window.activate(null);
     }
-    
+
     public static void consoleWriteSystem(String words, Project project) {
         ConsoleView console = getStoredConsole(project);
-        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Executable Build Output");
+        ToolWindow window = ToolWindowManager.getInstance(project).getToolWindow("Run New Executable (C/C++)");
         if (window == null) {
             return;
         }
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(console.getComponent(), "", true);
-        window.getContentManager().addContent(content);
+        
+        ensureConsoleContent(project);
         console.print(words, ConsoleViewContentType.SYSTEM_OUTPUT);
         window.activate(null);
     }
@@ -152,6 +156,22 @@ public class SysUtil {
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(currentDoc);
         VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile();
         return vFile.getPath();
+    }
+    
+    /**
+     * Gets the current file's directory as a VirtualFile for use in file choosers
+     * @param project IDE's opened project
+     * @return VirtualFile representing the directory of the currently open file
+     */
+    public static VirtualFile getCurrentFileDirectory(Project project) {
+        try {
+            Document currentDoc = FileEditorManager.getInstance(project).getSelectedTextEditor().getDocument();
+            PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(currentDoc);
+            VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile();
+            return vFile.getParent();
+        } catch (NullPointerException ex) {
+            return null;
+        }
     }
 
     /**
@@ -191,7 +211,6 @@ public class SysUtil {
      * @return Pair of int, string (return code, std output)
      */
     public static Pair<Integer, String> runCompiler(List<String> sourceFiles, String outputName, Boolean cpp, Project project) {
-        consoleWriteSystem((cpp ? "Compiling using G++ " : "Compiling using GCC ") + sourceFiles + "\n", project);
         Integer exitCode = 0;
         StringBuilder ret = new StringBuilder();
         String mainSrcPath = sourceFiles.get(0);
@@ -219,15 +238,8 @@ public class SysUtil {
             reader.close();
             exitCode = process.waitFor();
 
-            String infoStr = "To add more source c/c++ files, add them ABOVE ALL LINES in the active file, as a comment: //+file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
-
-            String endstr = "\n";
-            if (sourceFiles.size() == 4) {  // default length for 1 compiled file (contained all strs in command)
-                endstr = " " + infoStr;
-            }
-
             if (exitCode == 0) {
-                ret.append("Compilation succeeded.").append(endstr);
+                ret.append("Compilation succeeded.\n");
             } else {
                 String errorName = getExitCodeDescription(exitCode);
                 ret.append("Compilation failed with exit code: ").append(exitCode).append(" (").append(errorName).append(")\n");
@@ -346,12 +358,7 @@ public class SysUtil {
             // convert the full command list to a string for printing
             String fullCmdString = String.join(" ", fullCmd);
 
-            String endstr = "";
-            if (params.isEmpty()) {
-                endstr = ". View docs on automatically adding parameters: https://feelixs.github.io/gcc-integration/config.html#adding-arguments-parameters";
-            }
-            consoleWriteInfo("Running with parameters: " + params + endstr, project);
-            consoleWriteInput("\n% " + fullCmdString + "\n", project);
+            consoleWriteInput("\n\n% " + fullCmdString + "\n", project);
             ProcessBuilder processBuilder = new ProcessBuilder(fullCmd);
             processBuilder.directory(workingDirectory);
             processBuilder.redirectErrorStream(true);

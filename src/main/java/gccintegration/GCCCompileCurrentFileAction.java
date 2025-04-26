@@ -31,6 +31,7 @@ public class GCCCompileCurrentFileAction extends AnAction {
                 shortcutText = KeymapUtil.getShortcutText(keyboardShortcut);
                 break;
             }
+
         }
         return shortcutText;
     }
@@ -83,12 +84,11 @@ public class GCCCompileCurrentFileAction extends AnAction {
 
         // determine if we need to use GCC or G++ (.c or .cpp)
         Pair<Integer, String> cmdRet = null;
+        SysUtil.clearConsole(thisProject);
         if ((curFileType.equals(".c")) | (curFileType.equals(".cpp"))) {
             List<String> sourceFiles = OptionParse.getChosenSourceFiles(thisProject, editor, filePath);
-            SysUtil.clearConsole(thisProject);
             cmdRet = SysUtil.runCompiler(sourceFiles, outname, curFileType.equals(".cpp"), thisProject);
         } else {
-            SysUtil.clearConsole(thisProject);
             String shortcutText = getShortcutText();
             SysUtil.consoleWriteInfo("Error: The `Run New Executable` plugin only works with .c and .cpp files. Current file type: " + curFileType + "\nPress " + shortcutText + " again with a valid active C/C++ file.\n", thisProject);
         }
@@ -97,17 +97,20 @@ public class GCCCompileCurrentFileAction extends AnAction {
             Integer cmdCode = cmdRet.getLeft();
             String cmdOut = cmdRet.getRight();
 
-            if (cmdRet.getLeft() == 0) { // refers to exit code
-                SysUtil.consoleWrite(cmdOut, thisProject);
-            } else {
-                String extraInfo = "\nINFO: To add more source C/C++ files, add them ABOVE ALL LINES in the active file, as a comment like // +file.cpp (https://feelixs.github.io/gcc-integration/config.html#adding-additional-source-files)\n";
-                SysUtil.consoleWriteError(cmdOut, thisProject);
-                SysUtil.consoleWriteSystem(extraInfo, thisProject);
+            if (cmdOut.contains(" command: Cannot run program ")) {
+                // "Error executing (gcc/g++) command: Cannot run program "(gcc/g++)" -> windows
+                SysUtil.consoleWriteError("Failed to compile file(s): " + cmdRet.getRight(), thisProject);
+                SysUtil.consoleWriteInfo("\nPlease install gcc. Refer here for info: https://feelixs.github.io/gcc-integration/index.html#dependencies", thisProject);
+                return;
             }
+            SysUtil.consoleWriteInfo("Compilation complete with exit code " + cmdCode.toString() + "\n", thisProject);
             if (cmdCode == 0) {
+                SysUtil.consoleWrite(cmdOut, thisProject);
                 SysUtil.consoleWriteInfo("Saved compiled executable as " + outpath + "\n", thisProject);
                 List<String> params = OptionParse.getChosenExeParams(thisProject, editor);
                 SysUtil.runExecutable(outpath, params, thisProject);
+            } else {
+                SysUtil.consoleWriteError(cmdOut, thisProject);
             }
         } else {
             SysUtil.consoleWriteError("Failed to compile file(s): An unknown error occurred.", thisProject);
