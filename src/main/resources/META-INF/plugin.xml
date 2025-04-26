@@ -24,6 +24,10 @@
     
     <change-notes><![CDATA[
     <h2>What's New</h2>
+    <h3>v1.2.9</h3>
+    <ul>
+      <li>Use the system file explorer UI when choose additional source files</li>
+    </ul>
     <h3>v1.2.8</h3>
     <ul>
       <li>Added options menu for adding more source files or runtime parameters.</li>
