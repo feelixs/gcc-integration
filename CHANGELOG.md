@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# ssh-plugin Changelog
+# GCC Integration Changelog
 
 ## [Unreleased]
 ### Added
