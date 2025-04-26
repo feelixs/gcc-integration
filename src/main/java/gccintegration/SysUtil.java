@@ -157,6 +157,22 @@ public class SysUtil {
         VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile();
         return vFile.getPath();
     }
+    
+    /**
+     * Gets the current file's directory as a VirtualFile for use in file choosers
+     * @param project IDE's opened project
+     * @return VirtualFile representing the directory of the currently open file
+     */
+    public static VirtualFile getCurrentFileDirectory(Project project) {
+        try {
+            Document currentDoc = FileEditorManager.getInstance(project).getSelectedTextEditor().getDocument();
+            PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(currentDoc);
+            VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile();
+            return vFile.getParent();
+        } catch (NullPointerException ex) {
+            return null;
+        }
+    }
 
     /**
      * Isolate the filename from filepaths

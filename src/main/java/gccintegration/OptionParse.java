@@ -2,9 +2,12 @@ package gccintegration;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -416,31 +419,25 @@ public class OptionParse {
             JButton removeButton = new JButton("Remove");
             
             browseButton.addActionListener(e -> {
-                // Get the current file's directory to use as initial directory
-                String currentFilePath = null;
-                try {
-                    currentFilePath = SysUtil.getCurrentFilepath(project);
-                } catch (Exception ex) {
-                    // Ignore exceptions if current file path can't be determined
+                // Use the IntelliJ file chooser API to select files
+                VirtualFile initialDir = SysUtil.getCurrentFileDirectory(project);
+                
+                FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, true)
+                    .withTitle("Select Additional Source Files")
+                    .withDescription("Choose C/C++ source files to include in compilation")
+                    .withFileFilter(file -> {
+                        String extension = file.getExtension();
+                        return extension != null && (extension.equals("c") || extension.equals("cpp") || 
+                                                     extension.equals("h") || extension.equals("hpp"));
+                    });
+                
+                if (initialDir != null) {
+                    descriptor.setRoots(initialDir);
                 }
                 
-                File initialDir = null;
-                if (currentFilePath != null) {
-                    File currentFile = new File(currentFilePath);
-                    initialDir = currentFile.getParentFile();
-                }
-                
-                JFileChooser fileChooser = new JFileChooser(initialDir);
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setMultiSelectionEnabled(true);
-                fileChooser.setFileFilter(new FileNameExtensionFilter("C/C++ Source Files", "c", "cpp", "h", "hpp"));
-                
-                int result = fileChooser.showOpenDialog(panel);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File[] selectedFiles = fileChooser.getSelectedFiles();
-                    for (File file : selectedFiles) {
-                        tableModel.addRow(new Object[]{file.getAbsolutePath()});
-                    }
+                VirtualFile[] chosenFiles = FileChooser.chooseFiles(descriptor, project, initialDir);
+                for (VirtualFile file : chosenFiles) {
+                    tableModel.addRow(new Object[]{file.getPath()});
                 }
             });
             
