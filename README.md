@@ -1,14 +1,21 @@
+# GCC-Integration
+
+![Build](https://github.com/feelixs/gcc-integration/workflows/Build/badge.svg)
+[![Version](https://img.shields.io/jetbrains/plugin/v/21574.svg)](https://plugins.jetbrains.com/plugin/21574)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/21574.svg)](https://plugins.jetbrains.com/plugin/21574)
+
+
+gcc-integration is a JetBrains IDE Plugin specifically designed for IDEs that do not have c/cpp support such as PyCharm. Its functionality is simple - it adds a keyboard shortcut that can run the GCC/G++ compiler on the active file (GCC must be already installed and in your system PATH).
+
+The default keyboard shortcut is `ctrl + shift + G`.
+
+
 ### Download Plugin
 
 - [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/21574-gcc-g--integration)
 
 - [Latest GitHub Release](https://github.com/mike-fmh/gcc-integration/releases)
 
-# GCC-Integration
-
-gcc-integration is a JetBrains IDE Plugin specifically designed for IDEs that do not have c/cpp support such as PyCharm. Its functionality is simple - it adds a keyboard shortcut that can run the GCC/G++ compiler on the active file (GCC must be already installed and in your system PATH).
-
-The default keyboard shortcut is `ctrl + shift + G`.
 
 ----
 
