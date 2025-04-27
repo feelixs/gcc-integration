@@ -167,3 +167,8 @@ jobs:
           ${{ needs.build.outputs.changelog }}
           EOM
           )"
+      - name: Upload Plugin to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "v$VERSION" ./build/libs/*$VERSION.jar
