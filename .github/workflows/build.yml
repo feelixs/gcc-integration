@@ -92,7 +92,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
-          path: ${{ steps.artifact_path.outputs.plugin_zip_path }}
+          path: ${{ steps.artifact.outputs.plugin_zip_path }}
 
   # Run tests and upload a code coverage report
   test:
