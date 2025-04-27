@@ -33,6 +33,7 @@ jobs:
     outputs:
       version: ${{ steps.properties.outputs.version }}
       changelog: ${{ steps.properties.outputs.changelog }}
+      plugin_zip_name: ${{ steps.artifact_path.outputs.plugin_zip_name }}
       pluginVerifierHomeDir: ${{ steps.properties.outputs.pluginVerifierHomeDir }}
     steps:
 
@@ -83,19 +84,15 @@ jobs:
           unzip "$FILENAME" -d content
 
           echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
+          echo "plugin_zip_name=$FILENAME" >> $GITHUB_OUTPUT
+          echo "plugin_zip_path=${{ github.workspace }}/build/distributions/$FILENAME" >> $GITHUB_OUTPUT
 
       # Store already-built plugin as an artifact for downloading
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
-          path: ./build/distributions/content/*/*
-      - name: Add artifact to drafted release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.build.outputs.version }}
-        run: |
-          gh release upload "v$VERSION" ./build/distributions/content/*/*
+          path: ${{ steps.artifact_path.outputs.plugin_zip_path }}
 
   # Run tests and upload a code coverage report
   test:
@@ -167,6 +164,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v${{ needs.build.outputs.version }}" \
+            --filename ...
             --draft \
             --title "v${{ needs.build.outputs.version }}" \
             --notes "$(cat << 'EOM'
