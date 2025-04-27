@@ -15,8 +15,17 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-        Provides a "Run" button for your C/C++ Code! Compile, run, and add parameters/additional source files through an intuitive GUI.
-  ]]></description>
+      Run C/C++ Code with One Click
+
+      This extension provides an intuitive "Run" button that compiles and executes your C/C++ code instantly. Features include:
+
+      • Clean interface for running code without leaving your editor
+      • Support for command-line parameters and arguments
+      • Easy integration of multiple source files
+      • Quick access via keyboard shortcut (Ctrl + Shift + G)
+
+      Streamline your C/C++ development workflow and focus on what matters - writing great code.
+     ]]></description>
     
     <change-notes><![CDATA[
     <h2>What's New</h2>
