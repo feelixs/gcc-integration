@@ -57,14 +57,8 @@ jobs:
         run: |
           ./gradlew patchChangelog --release-note="$CHANGELOG"
 
-      # Publish the plugin to JetBrains Marketplace
-      - name: Publish Plugin
-        env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        run: ./gradlew publishPlugin
+      - name: Build
+        run: ./gradlew buildPlugin
 
       # Upload artifact as a release asset
       - name: Upload Release Asset
@@ -99,3 +93,12 @@ jobs:
             --body "Current pull request contains patched \`CHANGELOG.md\` file for the \`$VERSION\` version." \
             --label "$LABEL" \
             --head $BRANCH
+
+      # Publish the plugin to JetBrains Marketplace
+      - name: Publish Plugin
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew publishPlugin
